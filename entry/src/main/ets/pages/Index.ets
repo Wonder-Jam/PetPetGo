@@ -1,11 +1,14 @@
 import router from '@ohos.router';
-
+import {PetState} from '../viewmodel/PetState'
+import { GlobalContext } from '../common/utils/GlobalContext';
+import common from '@ohos.app.ability.common';
 
 @Entry
 @Component
 struct Index {
   @State text: string = ''
   @State show: boolean = false;
+  @State petState: PetState = new PetState(getContext(this) as common.UIAbilityContext)
   controller: TextInputController = new TextInputController()
   build() {
     Row() {
