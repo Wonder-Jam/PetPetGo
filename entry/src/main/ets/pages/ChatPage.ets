@@ -1,32 +1,38 @@
 import router from '@ohos.router'
+import { ChatItem, ChatRecord } from '../model/ChatPageModel'
 
 @Entry
 @Component
-struct ChatPage{
+struct ChatPage {
   scroller: Scroller = new Scroller()
-  private arr: number[] = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
-  controller: TextInputController = new TextInputController()
+  controller: TextAreaController = new TextAreaController()
   @State text: string = router.getParams() ? router.getParams()['text'] : ""
-  build(){
-    Flex({direction: FlexDirection.Column}){
-      //TODO: 展示聊天记录
+
+  build() {
+    Flex({ direction: FlexDirection.Column }) {
       Scroll(this.scroller) {
         Column() {
-          ForEach(this.arr, (item) => {
-            Text(item.toString())
+          ForEach(ChatRecord, (item: ChatItem, index) => {
+            Text(item.content)
               .width('90%')
-              .height(150)
-              .borderRadius(15)
-              .backgroundColor(0xDCDCDC)
+              .borderRadius({
+                topLeft: 15,
+                topRight: 15,
+                bottomLeft: item.chatterType === 'user' ? 15 : 0,
+                bottomRight: item.chatterType === 'user' ? 0 : 15
+              })
+              .backgroundColor(item.chatterType === 'user' ? 0xDCDCDC : 0xEEF2FD)
               .fontSize(16)
-              .textAlign(TextAlign.Center)
-              .margin({ top: 10 })
+              .margin({ left: 10, right: 10, top: 20 })
+              .lineHeight(20)
+              .padding(10)
           }, item => item)
         }.width('100%')
-      }.height('90%')
-      .scrollable(ScrollDirection.Vertical)  // 滚动方向纵向
-      .scrollBar(BarState.Auto)  // 滚动条常驻显示
-      .scrollBarColor(Color.Gray)  // 滚动条颜色
+      }
+      .height('90%')
+      .scrollable(ScrollDirection.Vertical) // 滚动方向纵向
+      .scrollBar(BarState.Auto) // 滚动条常驻显示
+      .scrollBarColor(Color.Gray) // 滚动条颜色
       .scrollBarWidth(5) // 滚动条宽度
       .edgeEffect(EdgeEffect.None)
       .onScroll((xOffset: number, yOffset: number) => {
@@ -35,35 +41,34 @@ struct ChatPage{
       .onScrollEdge((side: Edge) => {
         console.info('To the edge')
       })
-      .onScrollEnd(() => {
-        console.info('Scroll Stop')
-      })
-      //TODO: 底部的发送框
-      Row(){
-        TextInput({ text: this.text, placeholder: 'input your word...', controller: this.controller })
+      Row() {
+        TextArea({ text: this.text, placeholder: '快来聊天吧！', controller: this.controller })
           .placeholderColor(Color.Grey)
           .placeholderFont({ size: 14, weight: 400 })
           .caretColor(Color.Blue)
-          .width('75%')
-          .height(40)
+          .width('85%')
+          .constraintSize({
+            minHeight: 40,
+            maxHeight: 80,
+          })
           .margin(5)
           .fontSize(14)
           .fontColor(Color.Black)
-          .inputFilter('[a-z]', (e) => {
-            console.log(JSON.stringify(e))
-          })
           .onChange((value: string) => {
             this.text = value
           })
-        Button('发送', { type: ButtonType.Normal, stateEffect: true })
-          .borderRadius(8)
-          .backgroundColor(0x317aff)
-          .width('22%')
-          .margin(5)
-          .onClick(() => {
-            console.log('ButtonType.Normal')
+          .onFocus(() => {
+            console.info('获取焦点')
           })
-      }.width('95%')
+        Image($r('app.media.message_send'))
+          .width(30)
+          .rotate({
+            angle: 45,
+          })
+          .onClick(() => console.info('发送信息'))
+      }.width('100%')
+      .alignItems(VerticalAlign.Center)
+      .justifyContent(FlexAlign.Center)
     }.width('100%').height('100%')
   }
 }
