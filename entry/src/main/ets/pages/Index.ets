@@ -41,28 +41,31 @@ struct Index {
             Row() {
               Image($r('app.media.food_state')).width(40).height(40).borderRadius(8).margin({ right: 10 })
               Progress({ value: 20, type: ProgressType.Capsule })
-                .width('80%')
+                .width('75%')
                 .height(10)
                 .margin({ top: 10 })
                 .color('#7B68EE')
+              Text('20%').margin({left:5})
             }.height('6%').width('95%')
 
             Row() {
               Image($r('app.media.clean_state')).width(40).height(40).borderRadius(8).margin({ right: 10 })
               Progress({ value: 20, type: ProgressType.Capsule })
-                .width('80%')
+                .width('75%')
                 .height(10)
                 .margin({ top: 10 })
                 .color('#7B68EE')
+              Text('20%').margin({left:5})
             }.height('6%').width('95%')
 
             Row() {
               Image($r('app.media.mood_upset')).width(40).height(40).borderRadius(8).margin({ right: 10 })
               Progress({ value: 20, type: ProgressType.Capsule })
-                .width('80%')
+                .width('75%')
                 .height(10)
-                .margin({ top: 10 })
+                .margin({ top: 5 })
                 .color('#7B68EE')
+              Text('20%').margin({left:5})
             }.height('6%').width('95%')
           }. width('95%')
           // TODO：pet主体，目前采用的是image，但是实现需求里的交互应该要换组件
