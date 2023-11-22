@@ -1,7 +1,8 @@
 import router from '@ohos.router';
-import {PetState} from '../viewmodel/PetState'
-import { GlobalContext } from '../common/utils/GlobalContext';
+import {PetState} from '../../viewmodel/PetState'
+import { GlobalContext } from '../../common/utils/GlobalContext';
 import common from '@ohos.app.ability.common';
+import {Pet} from './Components/Pet'
 
 @Entry
 @Component
@@ -69,10 +70,7 @@ struct Index {
             }.height('6%').width('95%')
           }. width('95%')
           // TODO：pet主体，目前采用的是image，但是实现需求里的交互应该要换组件
-          Row() {
-            Image($r('app.media.killua_main'))
-              .width(250).height(250).margin(15).borderRadius(30)
-          }.height('40%')
+          Pet({petState: this.petState})
           // TODO：底下的三个button
           Flex({ alignItems: ItemAlign.Start, justifyContent: FlexAlign.SpaceBetween }) {
             Column() {
