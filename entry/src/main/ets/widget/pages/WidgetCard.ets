@@ -1,64 +1,111 @@
+
 @Entry
 @Component
 struct WidgetCard {
-  /*
-   * The max lines.
-   */
-  readonly MAX_LINES: number = 1;
-
-  /*
-   * The action type.
-   */
   readonly ACTION_TYPE: string = 'router';
-
-  /*
-   * The message.
-   */
   readonly MESSAGE: string = 'add detail';
-
-  /*
-   * The ability name.
-   */
   readonly ABILITY_NAME: string = 'EntryAbility';
-
-  /*
-   * The with percentage setting.
-   */
-  readonly FULL_WIDTH_PERCENT: string = '100%';
-
-  /*
-   * The height percentage setting.
-   */
-  readonly FULL_HEIGHT_PERCENT: string = '100%';
+  @State showDialog : boolean = false;
+  @State count: number = 0;
 
   build() {
     Stack() {
-      Image($r("app.media.ic_widget"))
-        .width(this.FULL_WIDTH_PERCENT)
-        .height(this.FULL_HEIGHT_PERCENT)
+      Image($r("app.media.bg_widget"))
+        .width("100%")
+        .height("100%")
         .objectFit(ImageFit.Cover)
       Column() {
-        Text($r('app.string.title_immersive'))
-          .fontSize($r('app.float.title_immersive_font_size'))
-          .textOverflow({ overflow: TextOverflow.Ellipsis })
-          .fontColor($r('app.color.text_font_color'))
-          .maxLines(this.MAX_LINES)
-        Text($r('app.string.detail_immersive'))
-          .fontSize($r('app.float.detail_immersive_font_size'))
-          .opacity($r('app.float.detail_immersive_opacity'))
-          .margin({ top: $r('app.float.detail_immersive_margin_top') })
-          .textOverflow({ overflow: TextOverflow.Ellipsis })
-          .fontColor($r('app.color.text_font_color'))
-          .maxLines(this.MAX_LINES)
+        Row(){
+          Image($r("app.media.sad_and_cry"))
+            .width("80%")
+            .height("80%")
+            .objectFit(ImageFit.ScaleDown)
+          .onClick(()=>{
+            this.count++;
+            this.showDialog = true;
+          })
+          Column(){
+            Row(){
+              Image($r("app.media.fullness_widget"))
+                .width(14)
+                .height(14)
+              Text("20")
+                .fontSize(10)
+                .fontColor(Color.White)
+            }
+            .height(16)
+            .width(30)
+            .backgroundColor(Color.Gray)
+            .margin(2)
+            .justifyContent(FlexAlign.SpaceAround)
+
+            Row(){
+              Image($r("app.media.cleanliness_widget"))
+                .width(13)
+                .height(13)
+                .padding(1)
+              Text("20")
+                .fontSize(10)
+                .fontColor(Color.White)
+            }
+            .height(16)
+            .width(30)
+            .backgroundColor(Color.Gray)
+            .margin(2)
+            .justifyContent(FlexAlign.SpaceAround)
+
+
+
+            Row(){
+              Image($r("app.media.mood_widget"))
+                .width(14)
+                .height(14)
+              Text("20")
+                .fontSize(10)
+                .fontColor(Color.White)
+            }
+            .height(16)
+            .width(30)
+            .backgroundColor(Color.Gray)
+            .margin(2)
+            .justifyContent(FlexAlign.SpaceAround)
+
+          }
+          .height("100%")
+          .justifyContent(FlexAlign.Start)
+        }
       }
-      .width(this.FULL_WIDTH_PERCENT)
-      .height(this.FULL_HEIGHT_PERCENT)
+      .width("100%")
+      .height("100%")
       .alignItems(HorizontalAlign.Start)
       .justifyContent(FlexAlign.End)
       .padding($r('app.float.column_padding'))
+
+      if(this.showDialog) {
+        Text("呜呜，干嘛老点人家！已经点了" + this.count.toString() + "次了！")
+          .width('90%')
+          .borderRadius(10)
+          .backgroundColor(0xEEF2FD)
+          .fontSize(12)
+          .padding({
+            left:8,
+            right:8,
+            top:4,
+            bottom:4
+          })
+          .margin({
+            bottom:10
+          })
+          .onClick(()=>{
+            this.showDialog = false;
+            console.log("click the dialog")
+          })
+      }
+
     }
-    .width(this.FULL_WIDTH_PERCENT)
-    .height(this.FULL_HEIGHT_PERCENT)
+    .width("100%")
+    .height("100%")
+    .alignContent(Alignment.Bottom)
     .onClick(() => {
       postCardAction(this, {
         "action": this.ACTION_TYPE,
