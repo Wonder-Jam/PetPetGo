@@ -6,10 +6,10 @@ struct LoginPage {
   build() {
     Row() {
       Column() {
-        // Row(){
-        //   Image($r('app.media.default_profile'))
-        //     .scale({x: 0.1, y: 0.1})
-        // }
+        Row(){
+          Image($r('app.media.default_profile'))
+            .width("30%")
+        }
         Row(){
           Text('账号')
             .fontSize(20)
@@ -20,7 +20,12 @@ struct LoginPage {
               left: 10,
               right: 30
             })
-        }.margin(10)
+        }.margin({
+          top: 40,
+          bottom: 10,
+          right: 10,
+          left: 10
+        })
         Row(){
           Text('密码')
             .fontSize(20)
@@ -31,6 +36,7 @@ struct LoginPage {
               left: 10,
               right: 30
             })
+            .type(InputType.Password)
         }.margin(10)
         Text(){
           Span('还没有账号？快来').fontSize(11).fontColor(0xCCCCCC)
