@@ -6,6 +6,9 @@ export default class EntryFormAbility extends FormExtensionAbility {
   onAddForm(want) {
     // Called to return a FormBindingData object.
     let formData = {};
+    // PersistentStorage.PersistProp("fullness", 0);
+    // PersistentStorage.PersistProp("cleanliness",0);
+    // PersistentStorage.PersistProp("mood",0);
     return formBindingData.createFormBindingData(formData);
   }
 

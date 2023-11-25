@@ -1,15 +1,19 @@
 import router from '@ohos.router';
-import {PetState} from '../../viewmodel/PetState'
-import { GlobalContext } from '../../common/utils/GlobalContext';
-import common from '@ohos.app.ability.common';
-import {Pet} from './Components/Pet'
+import {Pet} from '../Components/Pet'
+
+
+PersistentStorage.PersistProp<number>('fullness', 60);
+PersistentStorage.PersistProp<number>('cleanliness',60);
+PersistentStorage.PersistProp<number>('mood',60);
 
 @Entry
 @Component
 struct Index {
   @State text: string = ''
   @State show: boolean = false;
-  @State petState: PetState = new PetState(getContext(this) as common.UIAbilityContext)
+  @StorageLink('fullness') fullness: number = 1
+  @StorageLink('cleanliness') cleanliness: number = 1
+  @StorageLink('mood') mood: number = 1
   controller: TextInputController = new TextInputController()
   build() {
     Row() {
@@ -41,36 +45,36 @@ struct Index {
           Column() {
             Row() {
               Image($r('app.media.food_state')).width(40).height(40).borderRadius(8).margin({ right: 10 })
-              Progress({ value: 20, type: ProgressType.Capsule })
+              Progress({ value: Number(this.fullness), type: ProgressType.Capsule })
                 .width('75%')
                 .height(10)
                 .margin({ top: 10 })
                 .color('#7B68EE')
-              Text('20%').margin({left:5})
+              Text(""+this.fullness).margin({left:5})
             }.height('6%').width('95%')
 
             Row() {
               Image($r('app.media.clean_state')).width(40).height(40).borderRadius(8).margin({ right: 10 })
-              Progress({ value: 20, type: ProgressType.Capsule })
+              Progress({ value: Number(this.cleanliness), type: ProgressType.Capsule })
                 .width('75%')
                 .height(10)
                 .margin({ top: 10 })
                 .color('#7B68EE')
-              Text('20%').margin({left:5})
+              Text(""+this.cleanliness).margin({left:5})
             }.height('6%').width('95%')
 
             Row() {
               Image($r('app.media.mood_upset')).width(40).height(40).borderRadius(8).margin({ right: 10 })
-              Progress({ value: 20, type: ProgressType.Capsule })
+              Progress({ value: Number(this.mood), type: ProgressType.Capsule })
                 .width('75%')
                 .height(10)
                 .margin({ top: 5 })
                 .color('#7B68EE')
-              Text('20%').margin({left:5})
+              Text(""+this.mood).margin({left:5})
             }.height('6%').width('95%')
           }. width('95%')
           // TODO：pet主体，目前采用的是image，但是实现需求里的交互应该要换组件
-          Pet({petState: this.petState})
+          Pet()
           // TODO：底下的三个button
           Flex({ alignItems: ItemAlign.Start, justifyContent: FlexAlign.SpaceBetween }) {
             Column() {
@@ -78,7 +82,9 @@ struct Index {
                 .borderRadius(8)
                 .width(80)
                 .onClick(() => {
-                  console.log('ButtonType.Normal')
+                  if(Number(this.fullness<100))this.fullness=Number(this.fullness)+10;
+                  // AppStorage.Set<number>('fullness', this.fullness)
+                  console.log('fullness'+this.fullness);
                 })
               Text('口粮零食').fontWeight(FontWeight.Bold)
             }
@@ -87,6 +93,8 @@ struct Index {
                 .borderRadius(8)
                 .width(80)
                 .onClick(() => {
+                  if(Number(this.mood<100))this.mood=Number(this.mood)+10;
+                  // AppStorage.Set<number>('mood', this.mood)
                   console.log('ButtonType.Normal')
                 })
               Text('玩具日用').fontWeight(FontWeight.Bold)
@@ -96,6 +104,8 @@ struct Index {
                 .borderRadius(8)
                 .width(80)
                 .onClick(() => {
+                  if(Number(this.cleanliness<100))this.cleanliness=Number(this.cleanliness)+10;
+                  // AppStorage.Set<number>('cleanliness', this.cleanliness)
                   console.log('ButtonType.Normal')
                 })
               Text('清洗保健').fontWeight(FontWeight.Bold)
