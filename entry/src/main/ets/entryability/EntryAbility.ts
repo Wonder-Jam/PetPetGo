@@ -5,6 +5,9 @@ import window from '@ohos.window';
 export default class EntryAbility extends UIAbility {
   onCreate(want, launchParam) {
     hilog.info(0x0000, 'testTag', '%{public}s', 'Ability onCreate');
+    // PersistentStorage.PersistProp("fullness", 0);
+    // PersistentStorage.PersistProp("cleanliness",0);
+    // PersistentStorage.PersistProp("mood",0);
   }
 
   onDestroy() {
