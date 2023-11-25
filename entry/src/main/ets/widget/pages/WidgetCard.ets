@@ -22,7 +22,7 @@ struct WidgetCard {
             .objectFit(ImageFit.ScaleDown)
           .onClick(()=>{
             this.count++;
-            this.showDialog = !this.showDialog;
+            this.showDialog = true;
           })
           Column(){
             Row(){
@@ -84,7 +84,7 @@ struct WidgetCard {
       if(this.showDialog) {
         Text("呜呜，干嘛老点人家！已经点了" + this.count.toString() + "次了！")
           .width('90%')
-          .borderRadius(15)
+          .borderRadius(10)
           .backgroundColor(0xEEF2FD)
           .fontSize(12)
           .padding({
@@ -96,7 +96,12 @@ struct WidgetCard {
           .margin({
             bottom:10
           })
+          .onClick(()=>{
+            this.showDialog = false;
+            console.log("click the dialog")
+          })
       }
+
     }
     .width("100%")
     .height("100%")
