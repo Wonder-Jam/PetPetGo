@@ -1,11 +1,17 @@
-import { PetState } from '../../../viewmodel/PetState'
+import {getAMedia} from '../viewmodel/PetMedia'
+
+// PersistentStorage.PersistProp("fullness", 0);
+// PersistentStorage.PersistProp("cleanliness",0);
+// PersistentStorage.PersistProp("mood",0);
 
 @Component
 export struct Pet {
-  @ObjectLink petState: PetState
   @State showDialog: boolean = false;
   @State dialog: string = '呜呜主人你不要我了么!'
-
+  @StorageLink("fullness") fullness: number = 1
+  @StorageLink("cleanliness") cleanliness: number = 1
+  @StorageLink("mood") mood: number = 1
+  @State url: Resource = $r('app.media.sad_and_cry')
   build() {
     Column() {
       Row() {
@@ -15,8 +21,6 @@ export struct Pet {
             .borderRadius({
               topLeft: 15,
               topRight: 15,
-              // bottomLeft: item.chatterType === 'user' ? 15 : 0,
-              // bottomRight: item.chatterType === 'user' ? 0 : 15
             })
             .backgroundColor(0xEEF2FD)
             .fontSize(16)
@@ -24,8 +28,8 @@ export struct Pet {
             .lineHeight(20)
             .padding(10)
         }
-      }.height('2co0%')
-      Image($r('app.media.sad_and_cry'))
+      }.height('20%')
+      Image(this.url)
         .width(250)
         .height(250)
         .margin(15)
@@ -33,6 +37,8 @@ export struct Pet {
         .objectFit(ImageFit.Contain)
         .onClick(() => {
           this.showDialog = true;
+          this.url=(getAMedia(this.fullness, this.cleanliness, this.mood));
+          console.log("mediaSource"+this.url)
           setTimeout(()=>{
             this.showDialog = false;
           }, 3000)
