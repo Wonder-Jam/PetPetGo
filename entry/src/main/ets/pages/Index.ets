@@ -3,12 +3,18 @@ import {PetState} from '../viewmodel/PetState'
 import { GlobalContext } from '../common/utils/GlobalContext';
 import common from '@ohos.app.ability.common';
 
+PersistentStorage.PersistProp("fullness", 0);
+PersistentStorage.PersistProp("cleanness",0);
+PersistentStorage.PersistProp("mood",0);
+
 @Entry
 @Component
 struct Index {
   @State text: string = ''
   @State show: boolean = false;
-  @State petState: PetState = new PetState(getContext(this) as common.UIAbilityContext)
+  @StorageLink("fullness") fullness: number = 0;
+  @StorageLink("cleanness") cleanness: number = 0;
+  @StorageLink("mood") mood: number = 0;
   controller: TextInputController = new TextInputController()
   build() {
     Row() {
@@ -107,19 +113,6 @@ struct Index {
                 });
               })
           }.height('17%').width('95%')
-          Panel(this.show) { // 展示日程
-            Column() {
-              Text('Today Calendar')
-              Divider()
-              Text('1. afternoon 4:00 The project meeting')
-            }
-          }
-          .type(PanelType.Foldable).mode(PanelMode.Half)
-          .dragBar(true) // 默认开启
-          .halfHeight('50%') // 默认一半
-          .onChange((width: number, height: number, mode: PanelMode) => {
-            console.info(`width:${width},height:${height},mode:${mode}`)
-          })
         }
         .width('100%')
       }
