@@ -24,7 +24,7 @@ export struct Pet {
             .lineHeight(20)
             .padding(10)
         }
-      }.height('20%')
+      }.height('2co0%')
       Image($r('app.media.sad_and_cry'))
         .width(250)
         .height(250)
