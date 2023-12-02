@@ -1,5 +1,5 @@
 import router from '@ohos.router'
-import { ChatItem, ChatRecord } from '../model/ChatPageModel'
+import ChatDialogViewModel, { ChatDialogue } from '../viewmodel/ChatDialogViewModel'
 
 @Entry
 @Component
@@ -7,21 +7,35 @@ struct ChatPage {
   scroller: Scroller = new Scroller()
   controller: TextAreaController = new TextAreaController()
   @State text: string = router.getParams() ? router.getParams()['text'] : ""
+  @State dialogs: ChatDialogue[] = ChatDialogViewModel.useGetDefaultDialogue();
 
   build() {
     Flex({ direction: FlexDirection.Column }) {
       Scroll(this.scroller) {
         Column() {
-          ForEach(ChatRecord, (item: ChatItem, index) => {
-            Text(item.content)
+          ForEach(this.dialogs, (item: ChatDialogue, index) => {
+            Text(item.dialogue.question)
               .width('90%')
               .borderRadius({
                 topLeft: 15,
                 topRight: 15,
-                bottomLeft: item.chatterType === 'user' ? 15 : 0,
-                bottomRight: item.chatterType === 'user' ? 0 : 15
+                bottomLeft: 15,
+                bottomRight: 0
               })
-              .backgroundColor(item.chatterType === 'user' ? 0xDCDCDC : 0xEEF2FD)
+              .backgroundColor(0xDCDCDC)
+              .fontSize(16)
+              .margin({ left: 10, right: 10, top: 20 })
+              .lineHeight(20)
+              .padding(10)
+            Text(item.dialogue.answer)
+              .width('90%')
+              .borderRadius({
+                topLeft: 15,
+                topRight: 15,
+                bottomLeft: 0,
+                bottomRight: 15
+              })
+              .backgroundColor(0xEEF2FD)
               .fontSize(16)
               .margin({ left: 10, right: 10, top: 20 })
               .lineHeight(20)
@@ -41,6 +55,7 @@ struct ChatPage {
       .onScrollEdge((side: Edge) => {
         console.info('To the edge')
       })
+
       Row() {
         TextArea({ text: this.text, placeholder: '快来聊天吧！', controller: this.controller })
           .placeholderColor(Color.Grey)

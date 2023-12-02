@@ -19,3 +19,14 @@ export const HistoryItems: HistoryItem[] = [
   new HistoryItem(6, 'item6', '23年19月8日'),
 ]
 
+class HistoryListViewModel {
+  historyList: HistoryItem[]
+
+  useGetDefaultHistoryList() {
+    return HistoryItems;
+  }
+}
+
+let historyListViewModel = new HistoryListViewModel();
+
+export default historyListViewModel as HistoryListViewModel;
