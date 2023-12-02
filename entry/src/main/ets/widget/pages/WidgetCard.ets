@@ -1,10 +1,16 @@
 
-@Entry
+
+let agencyStorage = new LocalStorage();
+
+@Entry(agencyStorage)
 @Component
 struct WidgetCard {
   readonly ACTION_TYPE: string = 'router';
   readonly MESSAGE: string = 'add detail';
   readonly ABILITY_NAME: string = 'EntryAbility';
+  @LocalStorageProp('fullness') fullness: string = '0';
+  @LocalStorageProp('cleanliness') cleanliness: string = '20';
+  @LocalStorageProp('mood') mood: string = '40';
   @State showDialog : boolean = false;
   @State count: number = 0;
 
@@ -29,7 +35,7 @@ struct WidgetCard {
               Image($r("app.media.fullness_widget"))
                 .width(14)
                 .height(14)
-              Text("20")
+              Text(this.fullness)
                 .fontSize(10)
                 .fontColor(Color.White)
             }
@@ -44,7 +50,7 @@ struct WidgetCard {
                 .width(13)
                 .height(13)
                 .padding(1)
-              Text("20")
+              Text(this.cleanliness)
                 .fontSize(10)
                 .fontColor(Color.White)
             }
@@ -60,7 +66,7 @@ struct WidgetCard {
               Image($r("app.media.mood_widget"))
                 .width(14)
                 .height(14)
-              Text("20")
+              Text(this.mood)
                 .fontSize(10)
                 .fontColor(Color.White)
             }
