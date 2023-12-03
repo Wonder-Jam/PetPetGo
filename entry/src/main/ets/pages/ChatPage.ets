@@ -8,7 +8,6 @@ struct ChatPage {
   controller: TextAreaController = new TextAreaController()
   @State text: string = router.getParams() ? router.getParams()['text'] : ""
   @State dialogs: ChatDialogue[] = ChatDialogViewModel.useGetDefaultDialogue();
-
   build() {
     Flex({ direction: FlexDirection.Column }) {
       Scroll(this.scroller) {

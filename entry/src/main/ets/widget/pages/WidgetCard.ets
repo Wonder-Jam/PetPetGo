@@ -1,8 +1,5 @@
 
-
-let agencyStorage = new LocalStorage();
-
-@Entry(agencyStorage)
+@Entry
 @Component
 struct WidgetCard {
   readonly ACTION_TYPE: string = 'router';
@@ -22,32 +19,10 @@ struct WidgetCard {
         .objectFit(ImageFit.Cover)
       Column() {
         Row(){
-          Image($r("app.media.sad_and_cry"))
-            .width("80%")
-            .height("80%")
-            .objectFit(ImageFit.ScaleDown)
-          .onClick(()=>{
-            this.count++;
-            this.showDialog = true;
-          })
-          Column(){
-            Row(){
-              Image($r("app.media.fullness_widget"))
-                .width(14)
-                .height(14)
-              Text(this.fullness)
-                .fontSize(10)
-                .fontColor(Color.White)
-            }
-            .height(16)
-            .width(30)
-            .backgroundColor(Color.Gray)
-            .margin(2)
-            .justifyContent(FlexAlign.SpaceAround)
           Stack(){
             Image($r("app.media.fullness_widget"))
               .width(44)
-            Text("20")
+            Text(this.fullness)
               .fontColor(Color.White)
               .fontSize(14)
               .padding({
@@ -55,26 +30,11 @@ struct WidgetCard {
               })
           }
           .alignContent(Alignment.End)
-
-            Row(){
-              Image($r("app.media.cleanliness_widget"))
-                .width(13)
-                .height(13)
-                .padding(1)
-              Text(this.cleanliness)
-                .fontSize(10)
-                .fontColor(Color.White)
-            }
-            .height(16)
-            .width(30)
-            .backgroundColor(Color.Gray)
-            .margin(2)
-            .justifyContent(FlexAlign.SpaceAround)
 
           Stack(){
             Image($r("app.media.cleanliness_widget"))
               .width(44)
-            Text("20")
+            Text(this.cleanliness)
               .fontColor(Color.White)
               .fontSize(14)
               .padding({
@@ -83,24 +43,10 @@ struct WidgetCard {
           }
           .alignContent(Alignment.End)
 
-
-            Row(){
-              Image($r("app.media.mood_widget"))
-                .width(14)
-                .height(14)
-              Text(this.mood)
-                .fontSize(10)
-                .fontColor(Color.White)
-            }
-            .height(16)
-            .width(30)
-            .backgroundColor(Color.Gray)
-            .margin(2)
-            .justifyContent(FlexAlign.SpaceAround)
           Stack(){
             Image($r("app.media.mood_widget"))
               .width(44)
-            Text("20")
+            Text(this.mood)
               .fontColor(Color.White)
               .fontSize(14)
               .padding({
