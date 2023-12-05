@@ -24,7 +24,7 @@ import FormInfo from '../../viewmodel/FormInfo';
 import Logger from '../utils/Logger';
 // import ProgressCardInfo from '../../viewmodel/ProgressCardInfo';
 // import TaskInfo, { taskType } from '../../viewmodel/TaskInfo';
-import { columnDayInfoList, columnTaskInfoInfoList, columnFormInfoList } from '../../model/RdbColumnModel';
+import { columnDayInfoList, columnTaskInfoInfoList, columnFormInfoList } from '../../viewmodel/RdbColumnModel';
 import { CommonConstants as Const } from '../constants/CommonConstants';
 // import DayInfo from '../../viewmodel/DayInfo';
 import { GlobalContext } from './GlobalContext';

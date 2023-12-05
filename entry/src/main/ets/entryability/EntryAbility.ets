@@ -5,7 +5,7 @@ import App from '@system.app';
 import {CommonConstants} from '../common/constants/CommonConstants'
 import RdbUtils from '../common/database/Rdb/RdbUtils';
 import Logger from '../common/utils/Logger';
-import { columnFormInfoList } from '../model/RdbColumnModel';
+import { columnFormInfoList } from '../viewmodel/RdbColumnModel';
 
 
 

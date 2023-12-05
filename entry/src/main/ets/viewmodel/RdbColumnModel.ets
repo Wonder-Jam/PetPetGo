@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-import ColumnInfo from '../viewmodel/ColumnInfo';
+import ColumnInfo from './ColumnInfo';
 
 export const columnGlobalInfoList: Array<ColumnInfo> = [
   new ColumnInfo('id', 'integer', -1, true, true, false),
