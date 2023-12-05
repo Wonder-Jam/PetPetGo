@@ -1,6 +1,8 @@
 import router from '@ohos.router';
 import hilog from '@ohos.hilog';
 import HistoryListViewModel, { HistoryItem } from '../viewmodel/HistoryListViewModel'
+import { useGet } from '../common/utils/HttpUtil';
+import WebConstants from '../common/constants/WebConstants';
 
 @Entry
 @Component
@@ -30,7 +32,7 @@ struct HistoryPage {
             ForEach(this.historyList, (item: HistoryItem, index) => {
               ListItem() {
                 Row() {
-                  Text(item.title)
+                  Text(item.lastAnswer)
                     .width('55%')
                     .fontSize(16)
                     .margin({ left: 10 })
@@ -38,7 +40,7 @@ struct HistoryPage {
                     .borderRadius(10)
                     .maxLines(1)
                     .textOverflow({ overflow: TextOverflow.Ellipsis })
-                  Text(item.lastChatDate)
+                  Text(item.lastChatAt)
                     .width('30%')
                   Image($r('app.media.arrow_right'))
                     .height('50%')

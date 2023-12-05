@@ -41,4 +41,6 @@ export default class WebConstants {
    * Http request success status code.
    */
   static readonly HTTP_CODE_200: number = 200;
+
+  static readonly TEST_ENVIRONMENT: string = 'http://127.0.0.1:18000/api/v1'
 }

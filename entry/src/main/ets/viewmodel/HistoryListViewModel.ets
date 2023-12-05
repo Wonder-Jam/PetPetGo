@@ -1,12 +1,12 @@
 export class HistoryItem {
-  id: number
-  title: string
-  lastChatDate: string
+  historyId: number
+  lastAnswer: string
+  lastChatAt: string
   // historyDetailId:string
   constructor(id, title, lastChatDate) {
-    this.id = id
-    this.title = title
-    this.lastChatDate = lastChatDate
+    this.historyId = id
+    this.lastAnswer = title
+    this.lastChatAt = lastChatDate
   }
 }
 

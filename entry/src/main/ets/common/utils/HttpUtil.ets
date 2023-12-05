@@ -15,7 +15,7 @@ export function usePost<ResponseData, RequestData extends object | undefined = u
   return useHttpRequest<ResponseData, RequestData>(url, http.RequestMethod.POST, params)
 }
 
-function useHttpRequest<ResponseData extends string | Object | ArrayBuffer, RequestData>(url: string, method: http.RequestMethod, params?: RequestData): Promise<Response<ResponseData>> {
+function useHttpRequest<ResponseData, RequestData extends object | undefined = undefined>(url: string, method: http.RequestMethod, params?: RequestData): Promise<Response<ResponseData>> {
   let httpRequest = http.createHttp();
   let responseResult = httpRequest.request(url, {
     method: method,
@@ -26,11 +26,13 @@ function useHttpRequest<ResponseData extends string | Object | ArrayBuffer, Requ
     connectTimeout: WebConstants.HTTP_READ_TIMEOUT,
     extraData: params
   });
-  let serverData: Response<ResponseData>;
-  // Processes the data and returns.
+  let serverData: Response<ResponseData> = {
+    code: '0',
+    msg: 'default message',
+    data: {} as ResponseData
+  };
   return responseResult.then((value: http.HttpResponse) => {
     if (value.responseCode === http.ResponseCode.OK) {
-      // Obtains the returned data.
       let result = `${value.result}`;
       let resultJson: Response<ResponseData> = JSON.parse(result);
       serverData.data = resultJson.data;
@@ -40,8 +42,8 @@ function useHttpRequest<ResponseData extends string | Object | ArrayBuffer, Requ
       throw new Error(value.responseCode.toString());
     }
     return serverData;
-  }).catch((value: http.ResponseCode) => {
-    serverData.msg = `${ErrorStatusText[value]}&${value}`;
+  }).catch((error: Error) => {
+    console.error(error.name, error.message, error.stack)
     return serverData;
   });
 }

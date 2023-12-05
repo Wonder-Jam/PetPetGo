@@ -1,7 +1,30 @@
 import router from '@ohos.router'
+import WebConstants from '../common/constants/WebConstants'
+import { usePost } from '../common/utils/HttpUtil'
+
+interface LoginRequestData {
+  username: string,
+  password: string
+}
+
+interface LoginResponseData {
+  id: number,
+  username: string,
+  avatar: string,
+  phone: string,
+}
+
 @Entry
 @Component
 struct LoginPage {
+  onPageShow() {
+    usePost<LoginResponseData, LoginRequestData>(WebConstants.TEST_ENVIRONMENT + '/user/login', {
+      username: 'zouding',
+      password: '123456',
+    }).then(({code,data,msg}) => {
+      console.log(data.username, data.avatar, data.phone)
+    })
+  }
 
   build() {
     Row() {
