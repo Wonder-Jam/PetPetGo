@@ -1,14 +1,19 @@
 import router from '@ohos.router';
-import formProvider from '@ohos.app.form.formProvider';
 import { Pet } from '../Components/Pet'
-import formBindingData from '@ohos.app.form.formBindingData';
 import FormUtils from '../common/utils/FormUtils'
-import { GlobalContext } from '../common/utils/GlobalContext'
+import backgroundTaskManager from '@ohos.resourceschedule.backgroundTaskManager';
+import UIAbility from '@ohos.app.ability.UIAbility';
+import window from '@ohos.window';
+import AbilityConstant from '@ohos.app.ability.AbilityConstant';
+import Want from '@ohos.app.ability.Want';
+import rpc from '@ohos.rpc';
+import wantAgent, { WantAgent } from '@ohos.app.ability.wantAgent';
 
 
 PersistentStorage.PersistProp<string>('fullness', '60');
 PersistentStorage.PersistProp<string>('cleanliness', '60');
 PersistentStorage.PersistProp<string>('mood', '60');
+
 
 @Entry
 @Component
@@ -19,8 +24,53 @@ struct Index {
   @StorageLink('fullness') fullness: string = '1'
   @StorageLink('cleanliness') cleanliness: string = '1'
   @StorageLink('mood') mood: string = '1'
+  private context: Context = getContext(this);
   @State Number: String[] = ['0', '1', '2', '3', '4']
   scroller: Scroller = new Scroller()
+  startContinuousTask() {
+    let wantAgentInfo: wantAgent.WantAgentInfo = {
+      // 点击通知后，将要执行的动作列表
+      wants: [
+        {
+          bundleName: "com.example.myapplication",
+          abilityName: "com.example.myapplication.MainAbility"
+        }
+      ],
+      // 点击通知后，动作类型
+      operationType: wantAgent.OperationType.START_ABILITY,
+      // 使用者自定义的一个私有值
+      requestCode: 0,
+      // 点击通知后，动作执行属性
+      wantAgentFlags: [wantAgent.WantAgentFlags.UPDATE_PRESENT_FLAG]
+    };
+
+    // 通过wantAgent模块下getWantAgent方法获取WantAgent对象
+    wantAgent.getWantAgent(wantAgentInfo).then((wantAgentObj: WantAgent) => {
+      backgroundTaskManager.startBackgroundRunning(this.context,
+        backgroundTaskManager.BackgroundMode.TASK_KEEPING, wantAgentObj).then(() => {
+        console.info(`Succeeded in operationing startBackgroundRunning.`);
+      }).catch((err) => {
+        console.error(`Failed to operation startBackgroundRunning. Code is ${err.code}, message is ${err.message}`);
+      });
+    });
+  }
+
+  stopContinuousTask() {
+    backgroundTaskManager.stopBackgroundRunning(this.context).then(() => {
+      console.info(`Succeeded in operationing stopBackgroundRunning.`);
+    }).catch((err) => {
+      console.error(`Failed to operation stopBackgroundRunning. Code is ${err.code}, message is ${err.message}`);
+    });
+  }
+
+  onPageShow(){
+    this.stopContinuousTask()
+  }
+
+  onPageHide(){
+    this.startContinuousTask()
+  }
+
 
   private updateForm() {
     // let formData = { fullness: this.fullness, cleanliness: this.cleanliness, mood: this.mood };

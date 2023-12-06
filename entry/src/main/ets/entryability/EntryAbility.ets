@@ -9,6 +9,7 @@ import { columnFormInfoList } from '../viewmodel/RdbColumnModel';
 
 
 
+
 export default class EntryAbility extends UIAbility {
   async onCreate(want, launchParam) {
     hilog.info(0x0000, 'testTag', '%{public}s', 'Ability onCreate');
