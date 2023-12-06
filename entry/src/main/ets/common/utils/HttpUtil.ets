@@ -1,7 +1,7 @@
 import http from '@ohos.net.http';
 import WebConstants, { ContentType, ErrorStatusText } from '../constants/WebConstants';
 
-interface Response<T> {
+export interface Response<T> {
   code: string;
   msg: string | Resource;
   data: T;
