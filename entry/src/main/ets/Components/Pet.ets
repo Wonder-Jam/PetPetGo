@@ -1,4 +1,4 @@
-import {getAMedia} from '../viewmodel/PetMedia'
+import {getAMediaAndRes} from '../viewmodel/PetMedia'
 
 // PersistentStorage.PersistProp("fullness", 0);
 // PersistentStorage.PersistProp("cleanliness",0);
@@ -11,38 +11,38 @@ export struct Pet {
   @StorageLink("fullness") fullness: number = 1
   @StorageLink("cleanliness") cleanliness: number = 1
   @StorageLink("mood") mood: number = 1
-  @State url: Resource = $r('app.media.sad_and_cry')
+  @State url: Resource = getAMediaAndRes(this.fullness, this.cleanliness, this.mood).url
   build() {
-    Column() {
-      Row() {
-        if (this.showDialog) {
-          Text(this.dialog)
-            .width('90%')
-            .borderRadius({
-              topLeft: 15,
-              topRight: 15,
-            })
-            .backgroundColor(0xEEF2FD)
-            .fontSize(16)
-            .margin({ left: 10, right: 10, top: 20 })
-            .lineHeight(20)
-            .padding(10)
-        }
-      }.height('20%')
+    Stack() {
       Image(this.url)
         .width(250)
         .height(250)
-        .margin(15)
+        // .margin(15)
         .borderRadius(30)
+        // .border({width:1, color:Color.Gray})
         .objectFit(ImageFit.Contain)
         .onClick(() => {
+          let stateMediaAndRes = getAMediaAndRes(this.fullness, this.cleanliness, this.mood)
           this.showDialog = true;
-          this.url=(getAMedia(this.fullness, this.cleanliness, this.mood));
+          this.url=stateMediaAndRes.url;
+          this.dialog=stateMediaAndRes.res;
           console.log("mediaSource"+this.url)
           setTimeout(()=>{
             this.showDialog = false;
           }, 3000)
         })
+      Row() {
+        if (this.showDialog) {
+          Text(this.dialog)
+            .width('90%')
+            .borderRadius(15)
+            .backgroundColor(0xEEF2FD)
+            .fontSize(16)
+            .margin({ left: 10, right: 10, bottom: 170 })
+            .lineHeight(20)
+            .padding(10)
+        }
+      }.height('20%')
     }.height('40%')
   }
 }
