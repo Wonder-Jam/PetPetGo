@@ -33,12 +33,12 @@ class ChatDialogViewModel {
     return fakeDialogueList;
   }
 
-  useSendMessage(message: string) {
-    return usePost<Dialogue, Message>('', {
-      userId: 0,
-      content: message
-    })
-  }
+  // useSendMessage(message: string) {
+  //   return usePost<Dialogue, Message>('', {
+  //     userId: 0,
+  //     content: message
+  //   })
+  // }
 }
 
 const fakeDialogueList: ChatDialogue[] = [
