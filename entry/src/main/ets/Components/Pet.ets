@@ -11,7 +11,16 @@ export struct Pet {
   @StorageLink("fullness") fullness: number = 1
   @StorageLink("cleanliness") cleanliness: number = 1
   @StorageLink("mood") mood: number = 1
-  @State url: Resource = getAMediaAndRes(this.fullness, this.cleanliness, this.mood).url
+  @State url: Resource = $r('app.media.sad_and_cry')
+  aboutToAppear(){
+    let stateMediaAndRes = getAMediaAndRes(this.fullness, this.cleanliness, this.mood)
+    this.showDialog = true;
+    this.url=stateMediaAndRes.url;
+    this.dialog=stateMediaAndRes.res;
+    setTimeout(()=>{
+      this.showDialog=false;
+    }, 3000)
+  }
   build() {
     Stack() {
       Image(this.url)
