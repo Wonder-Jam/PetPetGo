@@ -1,11 +1,21 @@
 import router from '@ohos.router'
+import WebConstants from '../common/constants/WebConstants'
+import { usePost } from '../common/utils/HttpUtil'
+
+interface RegisterRequestData {
+  username: string,
+  avatar: string,
+  phone: string,
+  password: string,
+}
+
 @Entry
 @Component
 struct RegisterPage {
   username: string = ''
   phone: string = ''
   password: string = ''
-  pwd: string = ''
+  checkpassword: string = ''
   @State avatar: string = 'app.media.default_profile'
 
   build() {
@@ -25,6 +35,9 @@ struct RegisterPage {
               left: 10,
               right: 30,
             })
+            .onChange((value)=>{
+              this.username = value;
+            })
         }.margin({
           top: 40,
           bottom: 10,
@@ -41,6 +54,9 @@ struct RegisterPage {
               left: 10,
               right: 30
             })
+            .onChange((value)=>{
+              this.phone = value;
+            })
         }.margin(10)
         Row(){
           Text('输入密码')
@@ -53,18 +69,24 @@ struct RegisterPage {
               right: 30
             })
             .type(InputType.Password)
+            .onChange((value)=>{
+              this.password = value;
+            })
         }.margin(10)
         Row(){
           Text('确认密码')
             .fontSize(20)
             .fontWeight(FontWeight.Bold)
-          TextInput({placeholder: '请输入...', text: this.pwd})
+          TextInput({placeholder: '请输入...', text: this.checkpassword})
             .width('60%')
             .margin({
               left: 10,
               right: 30
             })
             .type(InputType.Password)
+            .onChange((value)=>{
+              this.checkpassword = value;
+            })
         }.margin(10)
         Text(){
           Span('已有账号？快来').fontSize(11).fontColor(0xCCCCCC)
@@ -87,8 +109,34 @@ struct RegisterPage {
             .fontSize(16)
             .fontWeight(FontWeight.Normal)
         }.type(ButtonType.Capsule).margin({ top: 50 }).backgroundColor('#ffd175').width('60%').height('5%')
-        .onClick(()=>{
-          // todo
+        .onClick(async ()=>{
+          // todo 前端校验
+          await usePost<boolean, RegisterRequestData>(WebConstants.TEST_ENVIRONMENT + '/user/register', {
+            username: this.username,
+            avatar: this.avatar,
+            phone: this.phone,
+            password: this.password,
+          }).then(async ({data}) => {
+            if (data) {
+              router.replaceUrl({url: 'pages/LoginPage'})
+            }else{
+              AlertDialog.show(
+                {
+                  message: '注册失败，请重试',
+                  alignment: DialogAlignment.Center,
+                  confirm: {
+                    value: '确定',
+                    action: () => {
+                      console.info('Button-clicking callback')
+                    }
+                  },
+                  cancel: () => {
+                    console.info('Closed callbacks')
+                  }
+                }
+              )
+            }
+          })
         })
       }
       .width('100%')

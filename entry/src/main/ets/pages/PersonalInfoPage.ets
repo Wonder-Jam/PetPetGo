@@ -1,11 +1,28 @@
-import TreeMap from '@ohos.util.TreeMap'
+import WebConstants from '../common/constants/WebConstants';
+import { useGet } from '../common/utils/HttpUtil';
+import PreferencesUtils from '../common/utils/PreferencesUtils';
+
+interface InfoRequestData {}
+
+interface InfoResponseData {
+  id: number,
+  avatar: string,
+  username: string,
+  phone: string,
+  gender: string,
+  email: string,
+  birthday: string,
+  region: string,
+  intro: string
+}
+
 @Entry
 @Component
 struct PersonalInfoPage{
   @State isChange: boolean = false
 
   @State username: string = '默认昵称'
-  // @State avatar: string = 'app.media.default_profile'
+  @State avatar: string = 'app.media.default_profile'
 
   @State sex: string = '请选择'
   @State date: string = '请选择'
@@ -25,6 +42,26 @@ struct PersonalInfoPage{
     confirm: (()=>{this.localArea = this.inputValue;this.isChange = true}), textValue: $textValue, inputValue: $inputValue }), })
   profileDialogController: CustomDialogController = new CustomDialogController({ builder: CustomDialogExample({
     confirm: (()=>{this.profile = this.inputValue;this.isChange = true}), textValue: $textValue, inputValue: $inputValue }), })
+
+  async onPageShow(){
+      let id = await PreferencesUtils.preferencesGet('userid')
+      // useGet<InfoResponseData, InfoRequestData>(WebConstants.TEST_ENVIRONMENT + '/user/'+id.toString()+'/info')
+      //   .then(({code,data,msg}) => {
+      //     this.username = data.username;
+      //     this.avatar = data.avatar;
+      //     this.sex = data.gender;
+      //     this.phoneNumber = data.phone;
+      //     // this.date = data.birthday;
+      //     this.localArea = data.region;
+      //     this.mailbox = data.email;
+      //     this.profile = data.intro;
+      //   })
+      // await PreferencesUtils.preferencesGetAll().then((val)=>{
+      //   let allKeys = Object.keys(val);
+      //   console.info('getAll keys = ' + allKeys);
+      //   console.info("getAll object = " + JSON.stringify(val));
+      // })
+  }
 
   aboutToDisappear() {
     delete this.numDialogController,

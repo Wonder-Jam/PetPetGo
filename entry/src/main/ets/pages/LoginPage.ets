@@ -1,6 +1,7 @@
 import router from '@ohos.router'
 import WebConstants from '../common/constants/WebConstants'
 import { usePost } from '../common/utils/HttpUtil'
+import PreferencesUtils from '../common/utils/PreferencesUtils'
 
 interface LoginRequestData {
   username: string,
@@ -18,13 +19,15 @@ interface LoginResponseData {
 @Component
 struct LoginPage {
   onPageShow() {
-    usePost<LoginResponseData, LoginRequestData>(WebConstants.TEST_ENVIRONMENT + '/user/login', {
-      username: 'zouding',
-      password: '123456',
-    }).then(({code,data,msg}) => {
-      console.log(data.username, data.avatar, data.phone)
-    })
+    // usePost<LoginResponseData, LoginRequestData>(WebConstants.TEST_ENVIRONMENT + '/user/login', {
+    //   username: 'zouding',
+    //   password: '123456',
+    // }).then(({code,data,msg}) => {
+    //   console.log(data.username, data.avatar, data.phone)
+    // })
   }
+  @State username: string = ''
+  @State password: string = ''
 
   build() {
     Row() {
@@ -37,11 +40,14 @@ struct LoginPage {
           Text('账号')
             .fontSize(20)
             .fontWeight(FontWeight.Bold)
-          TextInput({placeholder: '请输入账号'})
+          TextInput({text: this.username, placeholder: '请输入账号'})
             .width('60%')
             .margin({
               left: 10,
               right: 30
+            })
+            .onChange((value)=>{
+              this.username = value
             })
         }.margin({
           top: 40,
@@ -53,13 +59,16 @@ struct LoginPage {
           Text('密码')
             .fontSize(20)
             .fontWeight(FontWeight.Bold)
-          TextInput({placeholder: '请输入密码'})
+          TextInput({text: this.password, placeholder: '请输入密码'})
             .width('60%')
             .margin({
               left: 10,
               right: 30
             })
             .type(InputType.Password)
+            .onChange((value)=>{
+              this.password = value
+            })
         }.margin(10)
         Text(){
           Span('还没有账号？快来').fontSize(11).fontColor(0xCCCCCC)
@@ -89,6 +98,38 @@ struct LoginPage {
         .backgroundColor('#ffd175')
         .width('60%')
         .height('5%')
+        .onClick(async ()=>{
+          // todo 前端输入校验
+          await usePost<LoginResponseData, LoginRequestData>(WebConstants.TEST_ENVIRONMENT + '/user/login', {
+            username: this.username,
+            password: this.password,
+          }).then(async ({code, data}) => {
+            // todo 后端校验失败处理
+            if(code == '0'){
+              await PreferencesUtils.preferencesPut('userid', data.id);
+              router.clear()
+              router.pushUrl({url: 'pages/Index'})
+            }else{
+              AlertDialog.show(
+                {
+                  message: '用户名或密码错误',
+                  alignment: DialogAlignment.Center,
+                  confirm: {
+                    value: '确定',
+                    action: () => {
+                      console.info('Button-clicking callback')
+                    }
+                  },
+                  cancel: () => {
+                    console.info('Closed callbacks')
+                  }
+                }
+              )
+
+            }
+
+          })
+        })
       }
       .width('100%')
     }

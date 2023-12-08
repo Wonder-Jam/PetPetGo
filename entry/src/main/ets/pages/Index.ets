@@ -103,6 +103,9 @@ struct Index {
             .margin({ right: 10 })
             .onClick(() => {
               console.log('ButtonType.Normal')
+              router.pushUrl({
+                url: 'pages/PersonalInfoPage'
+              })
               this.show = true
             })
         }.height('7%').width('100%')

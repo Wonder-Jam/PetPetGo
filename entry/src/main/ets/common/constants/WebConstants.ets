@@ -42,5 +42,5 @@ export default class WebConstants {
    */
   static readonly HTTP_CODE_200: number = 200;
 
-  static readonly TEST_ENVIRONMENT: string = 'http://127.0.0.1:18000/api/v1'
+  static readonly TEST_ENVIRONMENT: string = 'https://1f2c-202-119-43-202.ngrok-free.app/api/v1'
 }

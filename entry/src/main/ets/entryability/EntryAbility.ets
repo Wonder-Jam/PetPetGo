@@ -6,9 +6,7 @@ import {CommonConstants} from '../common/constants/CommonConstants'
 import RdbUtils from '../common/database/Rdb/RdbUtils';
 import Logger from '../common/utils/Logger';
 import { columnFormInfoList } from '../viewmodel/RdbColumnModel';
-
-
-
+import PreferencesUtils from '../common/utils/PreferencesUtils';
 
 export default class EntryAbility extends UIAbility {
   async onCreate(want, launchParam) {
@@ -22,23 +20,37 @@ export default class EntryAbility extends UIAbility {
     AppStorage.SetOrCreate('fullness', '60');
     AppStorage.SetOrCreate('cleanliness', '60');
     AppStorage.SetOrCreate('mood', '60');
+
+    await PreferencesUtils.initPreferences(this.context)
+    await PreferencesUtils.preferencesPut('fruit', 'apple')
   }
 
   onDestroy() {
     hilog.info(0x0000, 'testTag', '%{public}s', 'Ability onDestroy');
   }
 
-  onWindowStageCreate(windowStage: window.WindowStage) {
+  async onWindowStageCreate(windowStage: window.WindowStage) {
     // Main window is created, set main page for this ability
     hilog.info(0x0000, 'testTag', '%{public}s', 'Ability onWindowStageCreate');
 
-    windowStage.loadContent('pages/Index', (err, data) => {
-      if (err.code) {
-        hilog.error(0x0000, 'testTag', 'Failed to load the content. Cause: %{public}s', JSON.stringify(err) ?? '');
-        return;
-      }
-      hilog.info(0x0000, 'testTag', 'Succeeded in loading the content. Data: %{public}s', JSON.stringify(data) ?? '');
-    });
+    let isNotFirst: boolean = false;
+    if (isNotFirst){
+      windowStage.loadContent('pages/LoginPage', (err, data) => {
+        if (err.code) {
+          hilog.error(0x0000, 'testTag', 'Failed to load the content. Cause: %{public}s', JSON.stringify(err) ?? '');
+          return;
+        }
+        hilog.info(0x0000, 'testTag', 'Succeeded in loading the content. Data: %{public}s', JSON.stringify(data) ?? '');
+      });
+    }else{
+      windowStage.loadContent('pages/Index', (err, data) => {
+        if (err.code) {
+          hilog.error(0x0000, 'testTag', 'Failed to load the content. Cause: %{public}s', JSON.stringify(err) ?? '');
+          return;
+        }
+        hilog.info(0x0000, 'testTag', 'Succeeded in loading the content. Data: %{public}s', JSON.stringify(data) ?? '');
+      });
+    }
   }
 
   onWindowStageDestroy() {
