@@ -22,9 +22,9 @@ export default class EntryFormAbility extends FormExtensionAbility {
         formName: formName,
         formDimension: formDimension
       };
-      AppStorage.SetOrCreate('fullness', '60');
-      AppStorage.SetOrCreate('cleanliness', '60');
-      AppStorage.SetOrCreate('mood', '60');
+      // AppStorage.SetOrCreate('fullness', '60');
+      // AppStorage.SetOrCreate('cleanliness', '60');
+      // AppStorage.SetOrCreate('mood', '60');
       console.log('fromAction: system updating the card')
       FormUtils.insertFormData(this.context, formInfo);
 

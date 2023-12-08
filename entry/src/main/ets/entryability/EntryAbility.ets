@@ -19,9 +19,9 @@ export default class EntryAbility extends UIAbility {
       .catch((err: Error) => {
         Logger.error(`RdbHelper formInfo err : ${JSON.stringify(err)}`);
       });
-    AppStorage.SetOrCreate('fullness', '60');
-    AppStorage.SetOrCreate('cleanliness', '60');
-    AppStorage.SetOrCreate('mood', '60');
+    // AppStorage.SetOrCreate('fullness', '60');
+    // AppStorage.SetOrCreate('cleanliness', '60');
+    // AppStorage.SetOrCreate('mood', '60');
   }
 
   onDestroy() {
