@@ -70,7 +70,9 @@ struct WidgetCard {
             postCardAction(this, {
               'action': 'message',
               'params': {
-                'msgTest': 'interact'
+                'fullness': this.fullness,
+                'cleanliness':this.cleanliness,
+                'mood': this.mood
               }
             });
           })
