@@ -3,6 +3,7 @@ import { Pet } from '../Components/Pet'
 import FormUtils from '../common/utils/FormUtils'
 import BackgroundUtils from '../common/utils/BackgroundUtil'
 import common from '@ohos.app.ability.common';
+import { getProperties } from '../viewModel/PetMedia'
 
 
 PersistentStorage.PersistProp<string>('fullness', '60');
@@ -20,29 +21,30 @@ struct Index {
   @StorageLink('cleanliness') cleanliness: string = '1'
   @StorageLink('mood') mood: string = '1'
   private context: common.UIAbilityContext = getContext(this) as common.UIAbilityContext;
-  @State Number: String[] = ['0', '1', '2', '3', '4']
+  @State properties: Object[] = []
+  propertyAmount: Map<Number, {amount: Number}> =  new Map<Number, {amount: Number}>()
   scroller: Scroller = new Scroller()
 
-  onPageShow(){
+  onPageShow() {
     BackgroundUtils.stopContinuousTask(this.context)
+    console.log('map: ' + this.propertyAmount)
   }
 
-  onPageHide(){
+  onPageHide() {
     BackgroundUtils.startContinuousTask(this.context)
     setInterval(() => {
-      if(Number(this.mood)>=10) {
+      if (Number(this.mood) >= 10) {
         this.mood = String(Number(this.mood) - 10);
       }
-      if(Number(this.fullness)>=10) {
+      if (Number(this.fullness) >= 10) {
         this.fullness = String(Number(this.fullness) - 10);
       }
-      if(Number(this.cleanliness)>=10) {
+      if (Number(this.cleanliness) >= 10) {
         this.cleanliness = String(Number(this.cleanliness) - 10);
       }
       FormUtils.updateCards(getContext())
     }, 10000)
   }
-
 
   private updateForm() {
     // let formData = { fullness: this.fullness, cleanliness: this.cleanliness, mood: this.mood };
@@ -50,6 +52,11 @@ struct Index {
     console.log('fromAction: updateForm undergoing');
     FormUtils.updateCards(getContext())
     console.log('fromAction: updateForm complete');
+  }
+
+  private pullPanel(type: string) {
+    this.properties = getProperties(type)
+    this.show = true;
   }
 
   controller: TextInputController = new TextInputController()
@@ -78,7 +85,6 @@ struct Index {
               router.pushUrl({
                 url: 'pages/PersonalInfoPage'
               })
-              this.show = true
             })
         }.height('7%').width('100%')
         // .width('95%')
@@ -127,10 +133,7 @@ struct Index {
                   this.fullness = String(Number(this.fullness) + 10);
                   this.updateForm();
                 }
-                this.show = true;
-                // AppStorage.Set<number>('fullness', this.fullness)
-                console.log('fullness' + this.fullness);
-                console.log('show' + this.show)
+                this.pullPanel('food')
               })
             Text('口粮零食').fontWeight(FontWeight.Bold)
           }
@@ -145,8 +148,7 @@ struct Index {
                   this.updateForm()
                 }
                 ;
-                // AppStorage.Set<number>('mood', this.mood)
-                console.log('ButtonType.Normal')
+                this.pullPanel('toys')
               })
             Text('玩具日用').fontWeight(FontWeight.Bold)
           }
@@ -160,9 +162,7 @@ struct Index {
                   this.cleanliness = String(Number(this.cleanliness) + 10);
                   this.updateForm();
                 }
-                ;
-                // AppStorage.Set<number>('cleanliness', this.cleanliness)
-                console.log('ButtonType.Normal')
+                this.pullPanel('medicine')
               })
             Text('清洗保健').fontWeight(FontWeight.Bold)
           }
@@ -197,11 +197,12 @@ struct Index {
         .alignItems(VerticalAlign.Center)
         .justifyContent(FlexAlign.Center)
       }
-      if(this.show){
-       Column()
-         .height('100%')
-         .width('100%')
-         .backgroundColor(0x66000000)
+
+      if (this.show) {
+        Column()
+          .height('100%')
+          .width('100%')
+          .backgroundColor(0x66000000)
       }
       Panel(this.show) { // 展示日程
         Column() {
@@ -219,26 +220,34 @@ struct Index {
               .margin({ top: 10, bottom: 10, left: 20 })
               .width(100)
           }
+
           Divider()
           Grid(this.scroller) {
-            ForEach(this.Number, (day: string) => {
-              ForEach(this.Number, (day: string) => {
-                GridItem() {
-                  Text(day)
-                    .fontSize(16)
-                    .backgroundColor(0xF9CF93)
-                    .width('100%')
-                    .height('100%')
-                    .textAlign(TextAlign.Center)
-                }.height(100)
-              }, day => day)
-            }, day => day)
+            ForEach(this.properties, (item) => {
+              GridItem() {
+                Column() {
+                  Image(item.url)
+                    .borderRadius(10)
+                    .objectFit(ImageFit.Contain)
+                    .height(60)
+                    .width(60)
+                  Text(item.text)
+                    .fontSize(12)
+                    .height(10)
+                  Text(this.propertyAmount.has(item.id) ? String(this.propertyAmount.get(item.id).amount) : '0')
+                    .fontSize(12)
+                    .height(10)
+                }
+              }.height(100)
+            }, (item)=>{
+              return item.id
+            })
           }
           .columnsTemplate('1fr 1fr 1fr')
           .columnsGap(10)
           .rowsGap(10)
           .width('90%')
-          .backgroundColor(0xFAEEE0)
+          // .backgroundColor(0xFAEEE0)
           .height('90%')
         }
       }
