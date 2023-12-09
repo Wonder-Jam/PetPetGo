@@ -51,7 +51,6 @@ async function useHttpRequest<ResponseData, RequestData extends object | undefin
       if ('X-SET-COOKIE' in value.header) {
         await PreferencesUtils.preferencesPut('Token', value.header['X-SET-COOKIE'])
       }
-
       serverData.data = resultJson.data;
       serverData.code = resultJson.code;
       serverData.msg = resultJson.msg;

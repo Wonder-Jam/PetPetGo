@@ -22,7 +22,7 @@ export default class EntryAbility extends UIAbility {
     // AppStorage.SetOrCreate('mood', '60');
 
     await PreferencesUtils.initPreferences(this.context)
-    await PreferencesUtils.preferencesPut('fruit', 'apple')
+    // await PreferencesUtils.preferencesPut('fruit', 'apple')
 
   }
 

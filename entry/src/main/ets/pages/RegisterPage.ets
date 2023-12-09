@@ -1,6 +1,7 @@
 import router from '@ohos.router'
 import WebConstants from '../common/constants/WebConstants'
 import { usePost } from '../common/utils/HttpUtil'
+import { Alert } from '../Components/Dialog'
 
 interface RegisterRequestData {
   username: string,
@@ -26,7 +27,7 @@ struct RegisterPage {
             .width("30%")
         }
         Row(){
-          Text('输入昵称')
+          Text('输入账号')
             .fontSize(20)
             .fontWeight(FontWeight.Bold)
           TextInput({placeholder: '请输入...', text: this.username})
@@ -110,7 +111,13 @@ struct RegisterPage {
             .fontWeight(FontWeight.Normal)
         }.type(ButtonType.Capsule).margin({ top: 50 }).backgroundColor('#ffd175').width('60%').height('5%')
         .onClick(async ()=>{
-          // todo 前端校验
+          let re = new RegExp("\\d{4}")
+          // if (this.username.length < 0){Alert('账号过短，请输入至少4位');return}
+          if (!re.test(this.username)){Alert('请自定义四位数字的账号');return}
+          if (this.phone.length === 0){Alert('手机号码不能为空');return}
+          if (this.password.length === 0){Alert('密码不能为空');return}
+          if (this.checkpassword.length === 0){Alert('请输入确认密码');return}
+          if (this.checkpassword !== this.password){Alert('两次密码输入不一致');return}
           await usePost<boolean, RegisterRequestData>(WebConstants.TEST_ENVIRONMENT + '/user/register', {
             username: this.username,
             avatar: this.avatar,
@@ -120,21 +127,7 @@ struct RegisterPage {
             if (data) {
               router.replaceUrl({url: 'pages/LoginPage'})
             }else{
-              AlertDialog.show(
-                {
-                  message: '注册失败，请重试',
-                  alignment: DialogAlignment.Center,
-                  confirm: {
-                    value: '确定',
-                    action: () => {
-                      console.info('Button-clicking callback')
-                    }
-                  },
-                  cancel: () => {
-                    console.info('Closed callbacks')
-                  }
-                }
-              )
+              Alert('注册失败，请更换信息后重试')
             }
           })
         })

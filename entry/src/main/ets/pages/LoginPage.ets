@@ -2,6 +2,7 @@ import router from '@ohos.router'
 import WebConstants from '../common/constants/WebConstants'
 import { usePost } from '../common/utils/HttpUtil'
 import PreferencesUtils from '../common/utils/PreferencesUtils'
+import { Alert } from '../Components/Dialog'
 
 interface LoginRequestData {
   username: string,
@@ -28,6 +29,7 @@ struct LoginPage {
   }
   @State username: string = ''
   @State password: string = ''
+
 
   build() {
     Row() {
@@ -99,35 +101,19 @@ struct LoginPage {
         .width('60%')
         .height('5%')
         .onClick(async ()=>{
-          // todo 前端输入校验
+          if (this.username.length === 0){Alert('账号不能为空');return}
+          if (this.password.length === 0){Alert('密码不能为空');return}
           await usePost<LoginResponseData, LoginRequestData>(WebConstants.TEST_ENVIRONMENT + '/user/login', {
             username: this.username,
             password: this.password,
           }).then(async ({code, data}) => {
-            // todo 后端校验失败处理
             if(code == '0'){
               await PreferencesUtils.preferencesPut('userid', data.id);
               router.clear()
               router.pushUrl({url: 'pages/Index'})
             }else{
-              AlertDialog.show(
-                {
-                  message: '用户名或密码错误',
-                  alignment: DialogAlignment.Center,
-                  confirm: {
-                    value: '确定',
-                    action: () => {
-                      console.info('Button-clicking callback')
-                    }
-                  },
-                  cancel: () => {
-                    console.info('Closed callbacks')
-                  }
-                }
-              )
-
+              Alert('账号或密码错误')
             }
-
           })
         })
       }
