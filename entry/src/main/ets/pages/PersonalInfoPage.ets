@@ -45,22 +45,17 @@ struct PersonalInfoPage{
 
   async onPageShow(){
       let id = await PreferencesUtils.preferencesGet('userid')
-      // useGet<InfoResponseData, InfoRequestData>(WebConstants.TEST_ENVIRONMENT + '/user/'+id.toString()+'/info')
-      //   .then(({code,data,msg}) => {
-      //     this.username = data.username;
-      //     this.avatar = data.avatar;
-      //     this.sex = data.gender;
-      //     this.phoneNumber = data.phone;
-      //     // this.date = data.birthday;
-      //     this.localArea = data.region;
-      //     this.mailbox = data.email;
-      //     this.profile = data.intro;
-      //   })
-      // await PreferencesUtils.preferencesGetAll().then((val)=>{
-      //   let allKeys = Object.keys(val);
-      //   console.info('getAll keys = ' + allKeys);
-      //   console.info("getAll object = " + JSON.stringify(val));
-      // })
+      useGet<InfoResponseData, InfoRequestData>(WebConstants.TEST_ENVIRONMENT + '/user/'+id.toString()+'/info')
+        .then(({data}) => {
+          this.username = data.username;
+          this.avatar = data.avatar;
+          this.sex = data.gender;
+          this.phoneNumber = data.phone;
+          this.date = data.birthday;
+          this.localArea = data.region;
+          this.mailbox = data.email;
+          this.profile = data.intro;
+        })
   }
 
   aboutToDisappear() {
@@ -74,6 +69,18 @@ struct PersonalInfoPage{
         Stack(){
           Row().width("100%").height("100%").linearGradient({
             colors: [[0x6fc7ec, 0.0], [0x7dcbec, 0.1], [0x8bd0ed, 0.2],[0x9ad4ed, 0.3],[0xa8d9ed, 0.4],[0xb6ddee, 0.5],[0xc4e2ee, 0.6],[0xd3e6ee, 0.7],[0xe1ebef, 0.8],[0xefefef, 0.9],[0xefefef, 1.0]]
+            // colors: [
+            //   [0xffaa00, 0.0],
+            //   [0xfdb118, 0.1],
+            //   [0xfcb830, 0.2],
+            //   [0xfabf48, 0.3],
+            //   [0xf9c660, 0.4],
+            //   [0xf7cd78, 0.5],
+            //   [0xf5d38f, 0.6],
+            //   [0xf4daa7, 0.7],
+            //   [0xf2e1bf, 0.8],
+            //   [0xf1e8d7, 0.9],
+            //   [0xefefef, 1.0]]
           })
           Image($r('app.media.default_profile'))
             .width("30%")
@@ -105,6 +112,7 @@ struct PersonalInfoPage{
                 Image($r('app.media.arrow_right')).width(20)
                   .onClick(()=>{
                     this.numDialogController.open()
+                    this.textValue = ''
                   })
               }.width('100%').height(40)
             }
@@ -122,7 +130,6 @@ struct PersonalInfoPage{
                       confirm: {
                         value: '确认',
                         action: () => {
-
                         }
                       },
                       alignment: DialogAlignment.Bottom,
@@ -156,6 +163,7 @@ struct PersonalInfoPage{
                 Image($r('app.media.arrow_right')).width(20)
                   .onClick(()=>{
                     this.mailDialogController.open()
+                    this.textValue = ''
                   })
               }.width('100%').height(40)
             }
@@ -189,6 +197,7 @@ struct PersonalInfoPage{
                 Image($r('app.media.arrow_right')).width(20)
                   .onClick(()=>{
                     this.areaDialogController.open()
+                    this.textValue = ''
                   })
               }.width('100%').height(40)
             }
@@ -201,6 +210,7 @@ struct PersonalInfoPage{
                 Image($r('app.media.arrow_right')).width(20)
                   .onClick(()=>{
                     this.profileDialogController.open()
+                    this.textValue = ''
                   })
               }.width('100%').height(40)
             }
