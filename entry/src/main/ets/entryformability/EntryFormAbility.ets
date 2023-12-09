@@ -4,6 +4,8 @@ import FormExtensionAbility from '@ohos.app.form.FormExtensionAbility';
 import FormUtils from '../common/utils/FormUtils';
 import FormInfo from '../viewmodel/FormInfo';
 import {CommonConstants} from '../common/constants/CommonConstants'
+import formProvider from '@ohos.app.form.formProvider';
+import { getAMediaAndRes } from '../viewmodel/PetMedia';
 
 // PersistentStorage.PersistProp<string>('fullness', '60');
 // PersistentStorage.PersistProp<string>('cleanliness','60');
@@ -51,6 +53,17 @@ export default class EntryFormAbility extends FormExtensionAbility {
 
   onFormEvent(formId, message) {
     // Called when a specified message event defined by the form provider is triggered.
+    let stateMediaAndRes = getAMediaAndRes(Number(AppStorage.Get('fullness')), Number(AppStorage.Get('cleanliness')), Number(AppStorage.Get('mood')))
+    let formData = {
+      'url': stateMediaAndRes.url,
+      'dialog': stateMediaAndRes.res,
+    };
+    let formInfo = formBindingData.createFormBindingData(formData)
+    formProvider.updateForm(formId, formInfo).then((data) => {
+      console.info('FormAbility updateForm success.' + JSON.stringify(data));
+    }).catch((error) => {
+      console.error('FormAbility updateForm failed: ' + JSON.stringify(error));
+    })
   }
 
   onRemoveForm(formId) {
