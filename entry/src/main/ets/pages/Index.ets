@@ -4,6 +4,21 @@ import FormUtils from '../common/utils/FormUtils'
 import BackgroundUtils from '../common/utils/BackgroundUtil'
 import common from '@ohos.app.ability.common';
 import { getProperties } from '../viewModel/PetMedia'
+import { useGet, usePost } from '../common/utils/HttpUtil'
+import PreferencesUtils from '../common/utils/PreferencesUtils'
+import WebConstants from '../common/constants/WebConstants'
+import { Alert } from '../Components/Dialog';
+
+interface resObject {
+  id: Number;
+  amount: Number;
+  name: string;
+  type: string;
+}
+
+interface PropertiesResponseData {
+  data: [];
+}
 
 
 PersistentStorage.PersistProp<string>('fullness', '60');
@@ -21,13 +36,44 @@ struct Index {
   @StorageLink('cleanliness') cleanliness: string = '1'
   @StorageLink('mood') mood: string = '1'
   private context: common.UIAbilityContext = getContext(this) as common.UIAbilityContext;
+  private userid = ''
   @State properties: Object[] = []
-  propertyAmount: Map<Number, {amount: Number}> =  new Map<Number, {amount: Number}>()
+  // private propertyAmount: Map<Number, {amount: Number}> =  new Map<Number, {amount: Number}>()
+  // @State food: resObject[] = []
+  // @State medicine: resObject[] = []
+  // @State toy: resObject[] = []
+  @State propertyAmount: resObject[] = []
   scroller: Scroller = new Scroller()
 
-  onPageShow() {
+  async onPageShow() {
     BackgroundUtils.stopContinuousTask(this.context)
     console.log('map: ' + this.propertyAmount)
+    PreferencesUtils.preferencesGet('userid').then((id) => {
+      this.userid = String(id);
+    }).catch((err) => {
+      console.log('preference error' + err)
+    });
+    // await useGet<undefined,PropertiesResponseData>(WebConstants.TEST_ENVIRONMENT + `/user/${this.userid}?type='口粮零食'`).then(async ({code, msg, data}) => {
+    //   if(code == '0'){
+    //     this.food = data;
+    //   }else{
+    //     Alert(`错误：${msg}`)
+    //   }
+    // })
+    // await useGet<undefined,PropertiesResponseData>(WebConstants.TEST_ENVIRONMENT + `/user/${this.userid}?type='清洗保健'`).then(async ({code, msg, data}) => {
+    //   if(code == '0'){
+    //     this.medicine = data;
+    //   }else{
+    //     Alert(`错误：${msg}`)
+    //   }
+    // })
+    // await useGet<undefined,PropertiesResponseData>(WebConstants.TEST_ENVIRONMENT + `/user/${this.userid}?type='玩具日用'`).then(async ({code, msg, data}) => {
+    //   if(code == '0'){
+    //     this.toy = data;
+    //   }else{
+    //     Alert(`错误：${msg}`)
+    //   }
+    // })
   }
 
   onPageHide() {
@@ -54,8 +100,39 @@ struct Index {
     console.log('fromAction: updateForm complete');
   }
 
-  private pullPanel(type: string) {
+  private async pullPanel(type: string) {
     this.properties = getProperties(type)
+    switch (type) {
+      case 'food':
+        console.log('httputil pending, url:' + WebConstants.TEST_ENVIRONMENT + `/user/${this.userid??'nan'}?type='口粮零食'`)
+        await useGet<undefined, PropertiesResponseData>(WebConstants.TEST_ENVIRONMENT + `/user/${this.userid??'nan'}?type='口粮零食'`).then(async ({code, msg, data}) => {
+          if (code == '0') {
+            this.propertyAmount = data;
+          } else {
+            console.log('httputil error')
+            Alert(`错误：网络错误QAQ！`)
+          }
+        })
+        break
+      case 'medicine':
+        await useGet<undefined, PropertiesResponseData>(WebConstants.TEST_ENVIRONMENT + `/user/${this.userid??'nan'}?type='清洗保健'`).then(async ({code, msg, data}) => {
+          if (code == '0') {
+            this.propertyAmount = data;
+          } else {
+            Alert(`错误：网络错误QAQ！`)
+          }
+        })
+        break
+      case 'toys':
+        await useGet<undefined, PropertiesResponseData>(WebConstants.TEST_ENVIRONMENT + `/user/${this.userid??'nan'}?type='玩具日用'`).then(async ({code, msg, data}) => {
+          if (code == '0') {
+            this.propertyAmount = data;
+          } else {
+            Alert(`错误：网络错误QAQ！`)
+          }
+        })
+        break
+    }
     this.show = true;
   }
 
@@ -229,17 +306,18 @@ struct Index {
                   Image(item.url)
                     .borderRadius(10)
                     .objectFit(ImageFit.Contain)
-                    .height(60)
-                    .width(60)
+                    .height(56)
+                    .width(56)
                   Text(item.text)
                     .fontSize(12)
-                    .height(10)
-                  Text(this.propertyAmount.has(item.id) ? String(this.propertyAmount.get(item.id).amount) : '0')
+                    .height(12)
+                  Text(this.propertyAmount.find(obj => obj.id === item.id) ? String(this.propertyAmount.find(obj => obj.id === item.id)
+                    .amount) : '0')
                     .fontSize(12)
-                    .height(10)
+                    .height(12)
                 }
               }.height(100)
-            }, (item)=>{
+            }, (item) => {
               return item.id
             })
           }
