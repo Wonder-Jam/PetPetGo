@@ -8,6 +8,7 @@ import { useGet, usePost } from '../common/utils/HttpUtil'
 import PreferencesUtils from '../common/utils/PreferencesUtils'
 import WebConstants from '../common/constants/WebConstants'
 import { Alert } from '../Components/Dialog';
+import promptAction from '@ohos.promptAction'
 
 interface resObject {
   id: Number;
@@ -48,32 +49,11 @@ struct Index {
   async onPageShow() {
     BackgroundUtils.stopContinuousTask(this.context)
     console.log('map: ' + this.propertyAmount)
-    PreferencesUtils.preferencesGet('userid').then((id) => {
+    PreferencesUtils.preferencesGet('userid', -1).then((id) => {
       this.userid = String(id);
     }).catch((err) => {
       console.log('preference error' + err)
     });
-    // await useGet<undefined,PropertiesResponseData>(WebConstants.TEST_ENVIRONMENT + `/user/${this.userid}?type='口粮零食'`).then(async ({code, msg, data}) => {
-    //   if(code == '0'){
-    //     this.food = data;
-    //   }else{
-    //     Alert(`错误：${msg}`)
-    //   }
-    // })
-    // await useGet<undefined,PropertiesResponseData>(WebConstants.TEST_ENVIRONMENT + `/user/${this.userid}?type='清洗保健'`).then(async ({code, msg, data}) => {
-    //   if(code == '0'){
-    //     this.medicine = data;
-    //   }else{
-    //     Alert(`错误：${msg}`)
-    //   }
-    // })
-    // await useGet<undefined,PropertiesResponseData>(WebConstants.TEST_ENVIRONMENT + `/user/${this.userid}?type='玩具日用'`).then(async ({code, msg, data}) => {
-    //   if(code == '0'){
-    //     this.toy = data;
-    //   }else{
-    //     Alert(`错误：${msg}`)
-    //   }
-    // })
   }
 
   onPageHide() {
@@ -102,11 +82,18 @@ struct Index {
 
   private async pullPanel(type: string) {
     this.properties = getProperties(type)
+    const detectQuery = setTimeout(()=>{
+      promptAction.showToast({
+        message:"网络不畅，正在请求"
+      })
+    }, 2000)
+
     switch (type) {
       case 'food':
-        console.log('httputil pending, url:' + WebConstants.TEST_ENVIRONMENT + `/user/${this.userid??'nan'}?type='口粮零食'`)
-        await useGet<undefined, PropertiesResponseData>(WebConstants.TEST_ENVIRONMENT + `/user/${this.userid??'nan'}?type='口粮零食'`).then(async ({code, msg, data}) => {
+        console.log('httputil pending, url:' + WebConstants.TEST_ENVIRONMENT + `/user/${this.userid??'nan'}/prop?type=口粮零食`)
+        await useGet<undefined, PropertiesResponseData>(WebConstants.TEST_ENVIRONMENT + `/user/${this.userid??'nan'}/prop?type=口粮零食`).then(async ({code, msg, data}) => {
           if (code == '0') {
+            clearTimeout(detectQuery)
             this.propertyAmount = data;
           } else {
             console.log('httputil error')
@@ -115,8 +102,9 @@ struct Index {
         })
         break
       case 'medicine':
-        await useGet<undefined, PropertiesResponseData>(WebConstants.TEST_ENVIRONMENT + `/user/${this.userid??'nan'}?type='清洗保健'`).then(async ({code, msg, data}) => {
+        await useGet<undefined, PropertiesResponseData>(WebConstants.TEST_ENVIRONMENT + `/user/${this.userid??'nan'}/prop?type=清洗保健`).then(async ({code, msg, data}) => {
           if (code == '0') {
+            clearTimeout(detectQuery)
             this.propertyAmount = data;
           } else {
             Alert(`错误：网络错误QAQ！`)
@@ -126,6 +114,7 @@ struct Index {
       case 'toys':
         await useGet<undefined, PropertiesResponseData>(WebConstants.TEST_ENVIRONMENT + `/user/${this.userid??'nan'}?type='玩具日用'`).then(async ({code, msg, data}) => {
           if (code == '0') {
+            clearTimeout(detectQuery)
             this.propertyAmount = data;
           } else {
             Alert(`错误：网络错误QAQ！`)
@@ -160,7 +149,7 @@ struct Index {
             .onClick(() => {
               console.log('ButtonType.Normal')
               router.pushUrl({
-                url: 'pages/PersonalInfoPage'
+                url: 'pages/LoginPage'
               })
             })
         }.height('7%').width('100%')

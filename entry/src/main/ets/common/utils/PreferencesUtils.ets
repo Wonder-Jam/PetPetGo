@@ -13,8 +13,8 @@ export class PreferencesUtils{
 
   }
 
-  preferencesGet(key: string): Promise<data_preferences.ValueType> {
-    return preferences.get(key, 'default')
+  preferencesGet(key: string, defaultVal?: any): Promise<data_preferences.ValueType> {
+    return preferences.get(key, defaultVal??'default')
   }
 
   preferencesPut(key: string, value: data_preferences.ValueType = null): Promise<void>{

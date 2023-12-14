@@ -18,9 +18,9 @@ export function usePost<ResponseData, RequestData extends object | undefined = u
 }
 
 async function useHttpRequest<ResponseData, RequestData extends object | undefined = undefined>(url: string, method: http.RequestMethod, params?: RequestData): Promise<Response<ResponseData>> {
-  // console.log('httputil start')
+  console.log('httputil start')
   let token = await PreferencesUtils.preferencesGet("Token")
-  // console.log('httputil gettoken')
+  console.log('httputil gettoken')
   let httpRequest = http.createHttp();
   let serverData: Response<ResponseData> = {
     code: '-1',  // 默认的code不要用0，否则当请求失败时，外部的页面会因为code===0以为请求成功，进行赋值导致程序崩溃
@@ -38,13 +38,13 @@ async function useHttpRequest<ResponseData, RequestData extends object | undefin
     extraData: params
   }).catch((error: Error) => {
     // 请求本身也可能不合法（比如url不合法），需要catch
-    // console.log('httputil error received!' + error.message)
+    console.log('httputil error received!' + error.message)
     console.error(error.name, error.message, error.stack)
     return serverData;
   });
-  // console.log('httputil request sent!')
+  console.log('httputil request sent!')
   return responseResult.then(async (value: http.HttpResponse) => {
-    // console.log('httputil request received!')
+    console.log('httputil request received!')
     if (value.responseCode === http.ResponseCode.OK) {
       let result = `${value.result}`;
       let resultJson: Response<ResponseData> = JSON.parse(result);
@@ -52,6 +52,7 @@ async function useHttpRequest<ResponseData, RequestData extends object | undefin
       let isTokenInvalid: boolean = true;
       isTokenInvalid = value.responseCode === http.ResponseCode.UNAUTHORIZED
       if (isTokenInvalid) {
+        console.log('httputil: try redirect to login')
         router.pushUrl({
           url: 'pages/LoginPage'
         })
