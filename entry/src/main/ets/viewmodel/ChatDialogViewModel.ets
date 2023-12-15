@@ -1,3 +1,4 @@
+import WebConstants from '../common/constants/WebConstants';
 import { useGet, usePost } from '../common/utils/HttpUtil'
 
 export interface ChatDialogue {
@@ -19,14 +20,56 @@ export interface Message {
   content: string;
 }
 
+export interface DialogRequest {
+  userId: number
+  cursor: number
+  petId: number
+  historyId: number
+}
+
+export interface MessageRequest {
+  useId: number
+  petId: number
+  content: string
+}
+
+export interface MessageResponse {
+  id: number
+  userId: number
+  petId: number
+  dialogueNo: number
+  dialogue: {
+    question: string
+    answer: string
+  }
+  createdAt: number
+}
+
 class ChatDialogViewModel {
   ChatDialogList: ChatDialogue[];
 
-  async useGetHistoryDialogue(): Promise<ChatDialogue[]> {
-    await useGet<ChatDialogue[]>('').then(({data}) => {
-      this.ChatDialogList = data;
-    })
-    return this.ChatDialogList;
+  async useGetHistoryDialogue(params: DialogRequest): Promise<ChatDialogue[]> {
+    const response = await usePost<ChatDialogue[], DialogRequest>(WebConstants.TEST_ENVIRONMENT + '/dialogues', params)
+    return response.data;
+  }
+
+  async usePostMessage(params: MessageRequest): Promise<MessageResponse> {
+    const response = await usePost<MessageResponse, MessageRequest>(WebConstants.TEST_ENVIRONMENT + '/message', params)
+    return response.data
+  }
+
+  useGetMockMessage(params: MessageRequest): MessageResponse {
+    return {
+      id: 7,
+      userId: params.useId,
+      petId: params.petId,
+      dialogueNo: 1,
+      dialogue: {
+        question: params.content,
+        answer: "窝嫩叠"
+      },
+      createdAt: 1686136668994
+    }
   }
 
   useGetDefaultDialogue(): ChatDialogue[] {

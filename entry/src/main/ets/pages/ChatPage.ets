@@ -1,4 +1,5 @@
 import router from '@ohos.router'
+import PreferencesUtils from '../common/utils/PreferencesUtils'
 import ChatDialogViewModel, { ChatDialogue } from '../viewmodel/ChatDialogViewModel'
 
 @Entry
@@ -6,8 +7,54 @@ import ChatDialogViewModel, { ChatDialogue } from '../viewmodel/ChatDialogViewMo
 struct ChatPage {
   scroller: Scroller = new Scroller()
   controller: TextAreaController = new TextAreaController()
-  @State text: string = router.getParams() ? router.getParams()['text'] : ""
+  private userid = ''
+  @State text: string = ''
   @State dialogs: ChatDialogue[] = ChatDialogViewModel.useGetDefaultDialogue();
+  @State historyId: string = router.getParams()['historyId'] ?? ''
+  @State title: string = router.getParams()['title'] ?? ''
+
+  onPageShow() {
+    console.log('show')
+    PreferencesUtils.preferencesGet('userid', -1).then((id) => {
+      this.userid = String(id); // 这里的赋值是异步的
+    }).catch((err) => {
+      console.log('preference error' + err)
+    });
+    // console.log(this.title,this.historyId,'here',this.userid) this.userid log出来的是赋值前的值
+    // this.useChatHistoryPage()
+  }
+
+  async useChatHistoryPage() {
+    await ChatDialogViewModel.useGetHistoryDialogue({
+      userId: +this.userid,
+      cursor: 0,
+      petId: 0, // TODO:这里默认为0
+      historyId: 0
+    })
+  }
+
+  sendMessage() {
+    console.log('click')
+    if (this.text === ''){
+      return
+    }
+    const data = ChatDialogViewModel.useGetMockMessage({
+      useId: +this.userid,
+      petId: 0,
+      content: this.text
+    })
+    console.log(data.dialogue.question, data.dialogue.answer, this.text, this.userid)
+    this.dialogs.push(data)
+    this.scroller.scrollEdge(Edge.Bottom) // 有bug
+    // this.text = ''
+    // const {dialogue} = await ChatDialogViewModel.usePostMessage({
+    //   useId: +this.userid,
+    //   petId: 0,
+    //   content: this.text
+    // })
+    // console.log(dialogue.question, dialogue.answer)
+  }
+
   build() {
     Flex({ direction: FlexDirection.Column }) {
       Scroll(this.scroller) {
@@ -70,6 +117,7 @@ struct ChatPage {
           .fontColor(Color.Black)
           .onChange((value: string) => {
             this.text = value
+            console.log(value, this.text)
           })
           .onFocus(() => {
             console.info('获取焦点')
@@ -79,8 +127,9 @@ struct ChatPage {
           .rotate({
             angle: 45,
           })
-          .onClick(() => console.info('发送信息'))
+          .onClick(() => this.sendMessage()) // this 问题；不可以直接写：.onClick(this.sendMessage)
       }.width('100%')
+      .margin({ top: 10 })
       .alignItems(VerticalAlign.Center)
       .justifyContent(FlexAlign.Center)
     }.width('100%').height('100%')
