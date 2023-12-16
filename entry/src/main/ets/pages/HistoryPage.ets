@@ -23,11 +23,12 @@ struct HistoryPage {
     }).catch((err) => {
       console.log('preference error' + err)
     });
-    // this.useHistoryList()
+    this.useHistoryList()
   }
 
   async useHistoryList() {
-    this.historyList = await HistoryListViewModel.useGetHistoryList(this.userid)
+    const list = await HistoryListViewModel.useGetHistoryList(this.userid)
+    console.info(list.toString())
   }
 
   build() {

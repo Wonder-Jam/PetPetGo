@@ -6,6 +6,7 @@ import ChatDialogViewModel, { ChatDialogue } from '../viewmodel/ChatDialogViewMo
 @Component
 struct ChatPage {
   scroller: Scroller = new Scroller()
+  TextScroller: Scroller = new Scroller()
   controller: TextAreaController = new TextAreaController()
   private userid = ''
   @State text: string = ''
@@ -34,8 +35,7 @@ struct ChatPage {
   }
 
   sendMessage() {
-    console.log('click')
-    if (this.text === ''){
+    if (this.text === '') {
       return
     }
     const data = ChatDialogViewModel.useGetMockMessage({
@@ -45,7 +45,10 @@ struct ChatPage {
     })
     console.log(data.dialogue.question, data.dialogue.answer, this.text, this.userid)
     this.dialogs.push(data)
-    this.scroller.scrollEdge(Edge.Bottom) // 有bug
+    this.text = ''
+    setTimeout(() => {
+      this.scroller.scrollEdge(Edge.Bottom)
+    }, 15) // 很蹩脚的实现-等到UI更新后在滚动
     // this.text = ''
     // const {dialogue} = await ChatDialogViewModel.usePostMessage({
     //   useId: +this.userid,
@@ -103,25 +106,31 @@ struct ChatPage {
       })
 
       Row() {
-        TextArea({ text: this.text, placeholder: '快来聊天吧！', controller: this.controller })
-          .placeholderColor(Color.Grey)
-          .placeholderFont({ size: 14, weight: 400 })
-          .caretColor(Color.Blue)
-          .width('85%')
-          .constraintSize({
-            minHeight: 40,
-            maxHeight: 80,
-          })
-          .margin(5)
-          .fontSize(14)
-          .fontColor(Color.Black)
-          .onChange((value: string) => {
-            this.text = value
-            console.log(value, this.text)
-          })
-          .onFocus(() => {
-            console.info('获取焦点')
-          })
+        Scroll(this.TextScroller) {
+          TextArea({ text: this.text, placeholder: '快来聊天吧！', controller: this.controller })
+            .placeholderColor(Color.Grey)
+            .placeholderFont({ size: 14, weight: 400 })
+            .fontSize(14)
+            .fontColor(Color.Black)
+            .onChange((value: string) => {
+              this.text = value
+              this.TextScroller.scrollEdge(Edge.Bottom) // 为了实现始终滚动到底部
+            })
+            .backgroundColor('#ffffff')
+            .width('100%')// 不能设置高度为100%，否则最高只有80px，无法让scroller能够scroll（内部必须必外部高）
+        }
+        .width('85%')
+        .scrollBarWidth(0)
+        .backgroundColor('#19000000') // 设置为聚焦时的背景颜色，视觉上让用户误以为是在area内部滚动
+        .constraintSize({
+          maxHeight: 80
+        })//设置最大高度，从而实现滚动
+        .border({
+          color: '#E5E5E5',
+          style: BorderStyle.Solid,
+          width: 5,
+          radius: 18
+        })// 必须在scroller中设置border-而不能设置padding，因为padding在盒子内部，会随着滚动而隐藏
         Image($r('app.media.message_send'))
           .width(30)
           .rotate({
