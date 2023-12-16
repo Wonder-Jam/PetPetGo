@@ -9,6 +9,7 @@ import PreferencesUtils from '../common/utils/PreferencesUtils'
 import WebConstants from '../common/constants/WebConstants'
 import { Alert } from '../Components/Dialog';
 import promptAction from '@ohos.promptAction'
+import { getCurrentWeather } from '../viewmodel/WeatherViewModel'
 
 interface resObject {
   id: Number;
@@ -18,7 +19,7 @@ interface resObject {
 }
 
 interface PropertiesResponseData {
-  data: [];
+  data: resObject[];
 }
 
 
@@ -47,14 +48,18 @@ struct Index {
   scroller: Scroller = new Scroller()
 
   async onPageShow() {
+    console.log('onPageShow~')
     BackgroundUtils.stopContinuousTask(this.context)
     console.log('map: ' + this.propertyAmount)
+    getCurrentWeather()
     PreferencesUtils.preferencesGet('userid', -1).then((id) => {
       this.userid = String(id);
     }).catch((err) => {
       console.log('preference error' + err)
     });
   }
+
+
 
   onPageHide() {
     BackgroundUtils.startContinuousTask(this.context)
@@ -91,10 +96,10 @@ struct Index {
     switch (type) {
       case 'food':
         console.log('httputil pending, url:' + WebConstants.TEST_ENVIRONMENT + `/user/${this.userid??'nan'}/prop?type=口粮零食`)
-        await useGet<undefined, PropertiesResponseData>(WebConstants.TEST_ENVIRONMENT + `/user/${this.userid??'nan'}/prop?type=口粮零食`).then(async ({code, msg, data}) => {
+        await useGet<PropertiesResponseData, undefined>(WebConstants.TEST_ENVIRONMENT + `/user/${this.userid??'nan'}/prop?type=food`).then(async ({code, msg, data}) => {
           if (code == '0') {
             clearTimeout(detectQuery)
-            this.propertyAmount = data;
+            this.propertyAmount = data.data;
           } else {
             console.log('httputil error')
             Alert(`错误：网络错误QAQ！`)
@@ -102,20 +107,20 @@ struct Index {
         })
         break
       case 'medicine':
-        await useGet<undefined, PropertiesResponseData>(WebConstants.TEST_ENVIRONMENT + `/user/${this.userid??'nan'}/prop?type=清洗保健`).then(async ({code, msg, data}) => {
+        await useGet<PropertiesResponseData, undefined>(WebConstants.TEST_ENVIRONMENT + `/user/${this.userid??'nan'}/prop?type=清洗保健`).then(async ({code, msg, data}) => {
           if (code == '0') {
             clearTimeout(detectQuery)
-            this.propertyAmount = data;
+            this.propertyAmount = data.data;
           } else {
             Alert(`错误：网络错误QAQ！`)
           }
         })
         break
       case 'toys':
-        await useGet<undefined, PropertiesResponseData>(WebConstants.TEST_ENVIRONMENT + `/user/${this.userid??'nan'}?type='玩具日用'`).then(async ({code, msg, data}) => {
+        await useGet<PropertiesResponseData, undefined>(WebConstants.TEST_ENVIRONMENT + `/user/${this.userid??'nan'}?type='玩具日用'`).then(async ({code, msg, data}) => {
           if (code == '0') {
             clearTimeout(detectQuery)
-            this.propertyAmount = data;
+            this.propertyAmount = data.data;
           } else {
             Alert(`错误：网络错误QAQ！`)
           }

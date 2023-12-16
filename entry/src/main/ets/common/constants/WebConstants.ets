@@ -43,4 +43,6 @@ export default class WebConstants {
   static readonly HTTP_CODE_200: number = 200;
 
   static readonly TEST_ENVIRONMENT: string = 'http://124.70.78.16:18000/api/v1'
+
+  static readonly SERVERLESS_API: string = 'https://petpetgo.lsmcloud.top/api'
 }

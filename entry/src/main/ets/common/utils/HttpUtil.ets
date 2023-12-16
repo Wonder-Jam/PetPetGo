@@ -20,10 +20,10 @@ export function usePost<ResponseData, RequestData extends object | undefined = u
 async function useHttpRequest<ResponseData, RequestData extends object | undefined = undefined>(url: string, method: http.RequestMethod, params?: RequestData): Promise<Response<ResponseData>> {
   console.log('httputil start')
   let token = await PreferencesUtils.preferencesGet("Token")
-  console.log('httputil gettoken')
+  console.log('httputil gettoken', token)
   let httpRequest = http.createHttp();
   let serverData: Response<ResponseData> = {
-    code: '-1',  // 默认的code不要用0，否则当请求失败时，外部的页面会因为code===0以为请求成功，进行赋值导致程序崩溃
+    code: '-1', // 默认的code不要用0，否则当请求失败时，外部的页面会因为code===0以为请求成功，进行赋值导致程序崩溃
     msg: 'default message',
     data: {} as ResponseData
   };
@@ -32,7 +32,7 @@ async function useHttpRequest<ResponseData, RequestData extends object | undefin
     readTimeout: WebConstants.HTTP_READ_TIMEOUT,
     header: {
       'Content-Type': ContentType.JSON,
-      'Authorization': 'Bearer ' + token
+      'Authorization': 'Bearer ' + (token==='default' ? '':token)
     },
     connectTimeout: WebConstants.HTTP_READ_TIMEOUT,
     extraData: params
@@ -45,21 +45,18 @@ async function useHttpRequest<ResponseData, RequestData extends object | undefin
   console.log('httputil request sent!')
   return responseResult.then(async (value: http.HttpResponse) => {
     console.log('httputil request received!')
+
+    let isTokenInvalid: boolean = true;
+    isTokenInvalid = value.responseCode === http.ResponseCode.UNAUTHORIZED
     if (value.responseCode === http.ResponseCode.OK) {
       let result = `${value.result}`;
       let resultJson: Response<ResponseData> = JSON.parse(result);
-
-      let isTokenInvalid: boolean = true;
-      isTokenInvalid = value.responseCode === http.ResponseCode.UNAUTHORIZED
-      if (isTokenInvalid) {
-        console.log('httputil: try redirect to login')
-        router.pushUrl({
-          url: 'pages/LoginPage'
-        })
-        return serverData; // todo 中断请求的逻辑可能有问题
-      }
-      if ('X-SET-COOKIE' in value.header) {
-        await PreferencesUtils.preferencesPut('Token', value.header['X-SET-COOKIE'])
+      Object.entries(value.header).forEach(([key, value]) => {
+        console.log(`httputil: ${key}: ${value}`);
+      });
+      if ('x-set-cookie' in value.header) {
+        console.log('httputil: save token'+ value.header['x-set-cookie'])
+        await PreferencesUtils.preferencesPut('Token', value.header['x-set-cookie'])
       }
       serverData.data = resultJson.data;
       serverData.code = resultJson.code;
@@ -67,9 +64,16 @@ async function useHttpRequest<ResponseData, RequestData extends object | undefin
     } else {
       throw new Error(value.responseCode.toString());
     }
+    if (isTokenInvalid) {
+      console.log('httputil: try redirect to login')
+      router.pushUrl({
+        url: 'pages/LoginPage'
+      })
+      return serverData; // todo 中断请求的逻辑可能有问题
+    }
     return serverData;
   }).catch((error: Error) => {
-    console.log('httputil error received!'+error.message)
+    console.log('httputil error received!' + error.message)
     console.error(error.name, error.message, error.stack)
     return serverData;
   });

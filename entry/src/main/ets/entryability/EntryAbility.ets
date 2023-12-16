@@ -1,7 +1,6 @@
 import UIAbility from '@ohos.app.ability.UIAbility';
 import hilog from '@ohos.hilog';
 import window from '@ohos.window';
-import App from '@system.app';
 import {CommonConstants} from '../common/constants/CommonConstants'
 import RdbUtils from '../common/database/Rdb/RdbUtils';
 import Logger from '../common/utils/Logger';
