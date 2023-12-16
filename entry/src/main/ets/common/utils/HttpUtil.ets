@@ -32,7 +32,7 @@ async function useHttpRequest<ResponseData, RequestData extends object | undefin
     readTimeout: WebConstants.HTTP_READ_TIMEOUT,
     header: {
       'Content-Type': ContentType.JSON,
-      'Authorization': 'Bearer ' + token
+      'Authorization': 'Bearer ' + (token === 'default' ? '' : token)
     },
     connectTimeout: WebConstants.HTTP_READ_TIMEOUT,
     extraData: params
@@ -45,19 +45,11 @@ async function useHttpRequest<ResponseData, RequestData extends object | undefin
   console.log('httputil request sent!')
   return responseResult.then(async (value: http.HttpResponse) => {
     console.log('httputil request received!')
+    let isTokenInvalid: boolean = true;
+    isTokenInvalid = value.responseCode === http.ResponseCode.UNAUTHORIZED
     if (value.responseCode === http.ResponseCode.OK) {
       let result = `${value.result}`;
       let resultJson: Response<ResponseData> = JSON.parse(result);
-
-      let isTokenInvalid: boolean = true;
-      isTokenInvalid = value.responseCode === http.ResponseCode.UNAUTHORIZED
-      if (isTokenInvalid) {
-        console.log('httputil: try redirect to login')
-        router.pushUrl({
-          url: 'pages/LoginPage'
-        })
-        return serverData; // todo 中断请求的逻辑可能有问题
-      }
       console.log('header', JSON.stringify(value.header))
       if ('x-set-cookie' in value.header) {
         // 按分号拆分Cookie属性
@@ -72,7 +64,14 @@ async function useHttpRequest<ResponseData, RequestData extends object | undefin
       serverData.data = resultJson.data;
       serverData.code = resultJson.code;
       serverData.msg = resultJson.msg;
-    } else {
+    } else if (isTokenInvalid) {
+      console.log('httputil: try redirect to login')
+      router.pushUrl({
+        url: 'pages/LoginPage'
+      })
+      return serverData; // todo 中断请求的逻辑可能有问题
+    }
+    else {
       throw new Error(value.responseCode.toString());
     }
     return serverData;
