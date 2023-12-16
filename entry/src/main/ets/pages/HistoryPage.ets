@@ -20,10 +20,10 @@ struct HistoryPage {
     console.info('show')
     PreferencesUtils.preferencesGet('userid', -1).then((id) => {
       this.userid = String(id);
+      this.useHistoryList()
     }).catch((err) => {
       console.log('preference error' + err)
     });
-    this.useHistoryList()
   }
 
   async useHistoryList() {

@@ -20,10 +20,10 @@ export function usePost<ResponseData, RequestData extends object | undefined = u
 async function useHttpRequest<ResponseData, RequestData extends object | undefined = undefined>(url: string, method: http.RequestMethod, params?: RequestData): Promise<Response<ResponseData>> {
   console.log('httputil start')
   let token = await PreferencesUtils.preferencesGet("Token")
-  console.log('httputil gettoken')
+  console.log('httputil gettoken', token)
   let httpRequest = http.createHttp();
   let serverData: Response<ResponseData> = {
-    code: '-1',  // 默认的code不要用0，否则当请求失败时，外部的页面会因为code===0以为请求成功，进行赋值导致程序崩溃
+    code: '-1', // 默认的code不要用0，否则当请求失败时，外部的页面会因为code===0以为请求成功，进行赋值导致程序崩溃
     msg: 'default message',
     data: {} as ResponseData
   };
@@ -58,8 +58,16 @@ async function useHttpRequest<ResponseData, RequestData extends object | undefin
         })
         return serverData; // todo 中断请求的逻辑可能有问题
       }
-      if ('X-SET-COOKIE' in value.header) {
-        await PreferencesUtils.preferencesPut('Token', value.header['X-SET-COOKIE'])
+      console.log('header', JSON.stringify(value.header))
+      if ('x-set-cookie' in value.header) {
+        // 按分号拆分Cookie属性
+        let cookieAttributes = String(value.header['x-set-cookie']).split(";");
+        // 在拆分的属性中找到包含jwt的那个属性
+        let jwtCookie = cookieAttributes.find(attribute => attribute.trim().startsWith("jwt="));
+        // 提取jwt的值
+        let jwtValue = jwtCookie.split("=")[1];
+        console.log('jwt', jwtValue)
+        await PreferencesUtils.preferencesPut('Token', jwtValue)
       }
       serverData.data = resultJson.data;
       serverData.code = resultJson.code;
@@ -69,7 +77,7 @@ async function useHttpRequest<ResponseData, RequestData extends object | undefin
     }
     return serverData;
   }).catch((error: Error) => {
-    console.log('httputil error received!'+error.message)
+    console.log('httputil error received!' + error.message)
     console.error(error.name, error.message, error.stack)
     return serverData;
   });
