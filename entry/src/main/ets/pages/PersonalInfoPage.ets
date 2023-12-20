@@ -1,10 +1,9 @@
 import WebConstants from '../common/constants/WebConstants';
-import { useGet } from '../common/utils/HttpUtil';
+import { useGet, usePost, usePut } from '../common/utils/HttpUtil';
 import PreferencesUtils from '../common/utils/PreferencesUtils';
+import { Alert } from '../Components/Dialog';
 
-interface InfoRequestData {}
-
-interface InfoResponseData {
+interface InfoData {
   id: number,
   avatar: string,
   username: string,
@@ -45,16 +44,19 @@ struct PersonalInfoPage{
 
   async onPageShow(){
       let id = await PreferencesUtils.preferencesGet('userid')
-      useGet<InfoResponseData, InfoRequestData>(WebConstants.TEST_ENVIRONMENT + '/user/'+id.toString()+'/info')
+    console.info("personalinfo", id)
+      useGet<InfoData, undefined>(WebConstants.TEST_ENVIRONMENT + '/user/'+id.toString()+'/info')
         .then(({data}) => {
           this.username = data.username;
           this.avatar = data.avatar;
           this.sex = data.gender;
           this.phoneNumber = data.phone;
-          this.date = data.birthday;
+          let tmp = data.birthday.split('-');
+          this.date = tmp[0]+'年'+tmp[1]+'月'+tmp[2]+'日'
           this.localArea = data.region;
           this.mailbox = data.email;
           this.profile = data.intro;
+          console.info('getInfo success')
         })
   }
 
@@ -67,26 +69,27 @@ struct PersonalInfoPage{
     Column() {
       Column({ space: 5 }) {
         Stack(){
-          Row().width("100%").height("100%").linearGradient({
-            colors: [[0x6fc7ec, 0.0], [0x7dcbec, 0.1], [0x8bd0ed, 0.2],[0x9ad4ed, 0.3],[0xa8d9ed, 0.4],[0xb6ddee, 0.5],[0xc4e2ee, 0.6],[0xd3e6ee, 0.7],[0xe1ebef, 0.8],[0xefefef, 0.9],[0xefefef, 1.0]]
-            // colors: [
-            //   [0xffaa00, 0.0],
-            //   [0xfdb118, 0.1],
-            //   [0xfcb830, 0.2],
-            //   [0xfabf48, 0.3],
-            //   [0xf9c660, 0.4],
-            //   [0xf7cd78, 0.5],
-            //   [0xf5d38f, 0.6],
-            //   [0xf4daa7, 0.7],
-            //   [0xf2e1bf, 0.8],
-            //   [0xf1e8d7, 0.9],
-            //   [0xefefef, 1.0]]
-          })
+          Row().width("100%").height("100%")
+          //   .linearGradient({
+          //   // colors: [[0x6fc7ec, 0.0], [0x7dcbec, 0.1], [0x8bd0ed, 0.2],[0x9ad4ed, 0.3],[0xa8d9ed, 0.4],[0xb6ddee, 0.5],[0xc4e2ee, 0.6],[0xd3e6ee, 0.7],[0xe1ebef, 0.8],[0xefefef, 0.9],[0xefefef, 1.0]]
+          //   colors: [
+          //     [0xffbb33, 0.0],
+          //     [0xfdc046, 0.1],
+          //     [0xfcc559, 0.2],
+          //     [0xfacb6b, 0.3],
+          //     [0xf9d07e, 0.4],
+          //     [0xf7d591, 0.5],
+          //     [0xf5daa4, 0.6],
+          //     [0xf4dfb7, 0.7],
+          //     [0xf2e5c9, 0.8],
+          //     [0xf1eadc, 0.9],
+          //     [0xefefef, 1.0]]
+          // })
           Image($r('app.media.default_profile'))
             .width("30%")
             .borderRadius(90)
             .position({x: 20, y: 60})
-          Text(this.username).fontSize(20).fontWeight(700).position({x: 150, y: 110})
+          TextInput({text: this.username}).fontSize(20).fontWeight(700).position({x: 150, y: 110}).width(112).backgroundColor('#efefef')
         }.height('25%')
 
         Column(){
@@ -94,9 +97,42 @@ struct PersonalInfoPage{
             Text('个人信息').fontSize(18).fontWeight(FontWeight.Bold)
             Blank()
             if(this.isChange){
-              Button('保存', {type: ButtonType.Capsule}).width('22%').backgroundColor('#6fc7ec').fontSize(16).fontWeight('600').fontColor('#')
-                .onClick(()=>{
-                  this.isChange = false
+              Button('保存', {type: ButtonType.Capsule}).width('22%').backgroundColor('#ffd175').fontSize(16).fontWeight('600').fontColor('#')
+                .onClick(async ()=>{
+                  console.info('personalinfo area: ', this.localArea)
+                  console.info('personalinfo sex', this.sex)
+                  console.info('personalinfo birthday: ', this.date)
+                  let dateTmp = this.date.split(/年|月|日/)
+                  let year = dateTmp[0]
+                  let  month = dateTmp[1]
+                  let day = dateTmp[2]
+                  if (month.length < 2) {
+                    month = '0' + month
+                  }
+                  if (day.length < 2) {
+                    day = '0' + day
+                  }
+                  let birthday = year + '-' + month + '-' + day
+                  console.info('birthday: ', birthday)
+                  var userid = await PreferencesUtils.preferencesGet('userid')
+                  usePut<undefined, InfoData>(WebConstants.TEST_ENVIRONMENT + '/user/info', {
+                    id: userid as number,
+                    avatar: this.avatar,
+                    username: this.username,
+                    phone: this.phoneNumber,
+                    gender: this.sex,
+                    email: this.mailbox,
+                    birthday: birthday,
+                    region: this.localArea,
+                    intro: this.profile
+                  }).then(({code,data,msg}) => {
+                    if (parseInt(code) === 0) {
+                      Alert('更改成功')
+                      this.isChange = false
+                    }else{
+                      Alert(code+data+msg)
+                    }
+                  }).catch((e)=>console.info('personalinfo save failed', e))
                 })
             }else{
               Button('保存', {type: ButtonType.Capsule}).width('22%').backgroundColor('#efefef').fontSize(16).fontWeight('600').fontColor('#')
@@ -172,7 +208,7 @@ struct PersonalInfoPage{
               Row(){
                 Text('生日')
                 Blank()
-                Text(this.date).textAlign(TextAlign.End).fontSize(12).width('26%').backgroundColor('#fff')
+                Text(this.date).textAlign(TextAlign.End).fontSize(12).width('28%').backgroundColor('#fff')
                 Image($r('app.media.arrow_right')).width(20)
                   .onClick(() => {
                     DatePickerDialog.show({

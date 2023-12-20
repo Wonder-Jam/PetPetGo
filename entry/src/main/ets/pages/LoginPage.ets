@@ -19,14 +19,6 @@ interface LoginResponseData {
 @Entry
 @Component
 struct LoginPage {
-  onPageShow() {
-    // usePost<LoginResponseData, LoginRequestData>(WebConstants.TEST_ENVIRONMENT + '/user/login', {
-    //   username: 'zouding',
-    //   password: '123456',
-    // }).then(({code,data,msg}) => {
-    //   console.log(data.username, data.avatar, data.phone)
-    // })
-  }
   @State username: string = ''
   @State password: string = ''
 
@@ -110,7 +102,7 @@ struct LoginPage {
             if(code == '0'){
               await PreferencesUtils.preferencesPut('userid', data.id);
               router.clear()
-              router.pushUrl({url: 'pages/Index'})
+              router.replaceUrl({url: 'pages/Index'})
             }else{
               Alert('账号或密码错误')
             }

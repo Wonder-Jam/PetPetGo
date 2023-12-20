@@ -13,6 +13,10 @@ export function useGet<ResponseData, RequestData extends object | undefined = un
   return useHttpRequest<ResponseData, RequestData>(url, http.RequestMethod.GET);
 }
 
+export function usePut<ResponseData, RequestData extends object | undefined = undefined>(url: string, params: RequestData) {
+  return useHttpRequest<ResponseData, RequestData>(url, http.RequestMethod.PUT, params)
+}
+
 export function usePost<ResponseData, RequestData extends object | undefined = undefined>(url: string, params: RequestData) {
   return useHttpRequest<ResponseData, RequestData>(url, http.RequestMethod.POST, params)
 }
@@ -25,7 +29,7 @@ async function useHttpRequest<ResponseData, RequestData extends object | undefin
   let serverData: Response<ResponseData> = {
     code: '-1', // 默认的code不要用0，否则当请求失败时，外部的页面会因为code===0以为请求成功，进行赋值导致程序崩溃
     msg: 'default message',
-    data: {} as ResponseData
+    data: null as ResponseData
   };
   let responseResult = httpRequest.request(url, {
     method: method,
@@ -47,7 +51,10 @@ async function useHttpRequest<ResponseData, RequestData extends object | undefin
     console.log('httputil request received!')
     let isTokenInvalid: boolean = true;
     isTokenInvalid = value.responseCode === http.ResponseCode.UNAUTHORIZED
+    console.log('httputil tokeninvalid', isTokenInvalid)
+    console.log('httputil code', value.responseCode)
     if (value.responseCode === http.ResponseCode.OK) {
+      console.log('httputil token ok')
       let result = `${value.result}`;
       let resultJson: Response<ResponseData> = JSON.parse(result);
       console.log('header', JSON.stringify(value.header))
@@ -70,13 +77,12 @@ async function useHttpRequest<ResponseData, RequestData extends object | undefin
         url: 'pages/LoginPage'
       })
       return serverData; // todo 中断请求的逻辑可能有问题
-    }
-    else {
+    } else {
       throw new Error(value.responseCode.toString());
     }
     return serverData;
   }).catch((error: Error) => {
-    console.log('httputil error received!' + error.message)
+    console.log('httputil error received!gg' + error.message)
     console.error(error.name, error.message, error.stack)
     return serverData;
   });
