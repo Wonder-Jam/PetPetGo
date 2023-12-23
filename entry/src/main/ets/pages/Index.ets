@@ -18,9 +18,6 @@ interface resObject {
   type: string;
 }
 
-interface PropertiesResponseData {
-  data: resObject[];
-}
 
 
 PersistentStorage.PersistProp<string>('fullness', '60');
@@ -38,7 +35,7 @@ struct Index {
   @StorageLink('cleanliness') cleanliness: string = '1'
   @StorageLink('mood') mood: string = '1'
   private context: common.UIAbilityContext = getContext(this) as common.UIAbilityContext;
-  private userid = ''
+  @State userid: string = ''
   @State properties: Object[] = []
   // private propertyAmount: Map<Number, {amount: Number}> =  new Map<Number, {amount: Number}>()
   // @State food: resObject[] = []
@@ -95,11 +92,15 @@ struct Index {
 
     switch (type) {
       case 'food':
-        console.log('httputil pending, url:' + WebConstants.TEST_ENVIRONMENT + `/user/${this.userid??'nan'}/prop?type=口粮零食`)
-        await useGet<PropertiesResponseData, undefined>(WebConstants.TEST_ENVIRONMENT + `/user/${this.userid??'nan'}/prop?type=food`).then(async ({code, msg, data}) => {
+        console.log('httputil pending, url:' + WebConstants.TEST_ENVIRONMENT + `/user/${this.userid??'nan'}/prop?type=food`)
+        await useGet<resObject[], undefined>(WebConstants.TEST_ENVIRONMENT + `/user/${this.userid??'nan'}/prop?type=food`).then(async ({code, msg, data}) => {
           if (code == '0') {
             clearTimeout(detectQuery)
-            this.propertyAmount = data.data;
+            this.propertyAmount = data;
+            console.log('httputil'+data)
+            data.map((item)=>{
+              console.log('httputil'+item.name+item.amount)
+            })
           } else {
             console.log('httputil error')
             Alert(`错误：网络错误QAQ！`)
@@ -107,20 +108,26 @@ struct Index {
         })
         break
       case 'medicine':
-        await useGet<PropertiesResponseData, undefined>(WebConstants.TEST_ENVIRONMENT + `/user/${this.userid??'nan'}/prop?type=清洗保健`).then(async ({code, msg, data}) => {
+        await useGet<resObject[], undefined>(WebConstants.TEST_ENVIRONMENT + `/user/${this.userid??'nan'}/prop?type=medicine`).then(async ({code, msg, data}) => {
           if (code == '0') {
             clearTimeout(detectQuery)
-            this.propertyAmount = data.data;
+            this.propertyAmount = data;
+            data.map((item)=>{
+              console.log('httputil'+item.name+item.amount)
+            })
           } else {
             Alert(`错误：网络错误QAQ！`)
           }
         })
         break
       case 'toys':
-        await useGet<PropertiesResponseData, undefined>(WebConstants.TEST_ENVIRONMENT + `/user/${this.userid??'nan'}?type='玩具日用'`).then(async ({code, msg, data}) => {
+        await useGet<resObject[], undefined>(WebConstants.TEST_ENVIRONMENT + `/user/${this.userid??'nan'}/prop?type='toy'`).then(async ({code, msg, data}) => {
           if (code == '0') {
             clearTimeout(detectQuery)
-            this.propertyAmount = data.data;
+            this.propertyAmount = data;
+            data.map((item)=>{
+              console.log('httputil'+item.name+item.amount)
+            })
           } else {
             Alert(`错误：网络错误QAQ！`)
           }
@@ -192,7 +199,7 @@ struct Index {
           }.height('6%').width('95%')
         }.width('95%')
         // TODO：pet主体，目前采用的是image，但是实现需求里的交互应该要换组件
-        Pet()
+        Pet({userid: this.userid})
         // TODO：底下的三个button
         Flex({ alignItems: ItemAlign.Start, justifyContent: FlexAlign.SpaceBetween }) {
           Column() {
@@ -284,12 +291,6 @@ struct Index {
               })
               .margin({ top: 10, bottom: 10, right: 20 })
               .width(100)
-            Button('商店')
-              .onClick(() => {
-                this.show = false;
-              })
-              .margin({ top: 10, bottom: 10, left: 20 })
-              .width(100)
           }
 
           Divider()
@@ -305,7 +306,7 @@ struct Index {
                   Text(item.text)
                     .fontSize(12)
                     .height(12)
-                  Text(this.propertyAmount.find(obj => obj.id === item.id) ? String(this.propertyAmount.find(obj => obj.id === item.id)
+                  Text(this.propertyAmount.find(obj => obj.name === item.text) ? String(this.propertyAmount.find(obj => obj.name === item.text)
                     .amount) : '0')
                     .fontSize(12)
                     .height(12)
