@@ -10,6 +10,8 @@ import WebConstants from '../common/constants/WebConstants'
 import { Alert } from '../Components/Dialog';
 import promptAction from '@ohos.promptAction'
 import { getCurrentWeather } from '../viewmodel/WeatherViewModel'
+import { useGetMaxHistoryId, usePostMessage } from '../viewmodel/PetMedia';
+import App from '@system.app';
 
 interface resObject {
   id: Number;
@@ -17,7 +19,6 @@ interface resObject {
   name: string;
   type: string;
 }
-
 
 
 PersistentStorage.PersistProp<string>('fullness', '60');
@@ -51,12 +52,11 @@ struct Index {
     getCurrentWeather()
     PreferencesUtils.preferencesGet('userid', -1).then((id) => {
       this.userid = String(id);
+      console.log(String(id), 'id')
     }).catch((err) => {
       console.log('preference error' + err)
     });
   }
-
-
 
   onPageHide() {
     BackgroundUtils.startContinuousTask(this.context)
@@ -84,9 +84,9 @@ struct Index {
 
   private async pullPanel(type: string) {
     this.properties = getProperties(type)
-    const detectQuery = setTimeout(()=>{
+    const detectQuery = setTimeout(() => {
       promptAction.showToast({
-        message:"网络不畅，正在请求"
+        message: "网络不畅，正在请求"
       })
     }, 2000)
 
@@ -97,9 +97,9 @@ struct Index {
           if (code == '0') {
             clearTimeout(detectQuery)
             this.propertyAmount = data;
-            console.log('httputil'+data)
-            data.map((item)=>{
-              console.log('httputil'+item.name+item.amount)
+            console.log('httputil' + data)
+            data.map((item) => {
+              console.log('httputil' + item.name + item.amount)
             })
           } else {
             console.log('httputil error')
@@ -112,8 +112,8 @@ struct Index {
           if (code == '0') {
             clearTimeout(detectQuery)
             this.propertyAmount = data;
-            data.map((item)=>{
-              console.log('httputil'+item.name+item.amount)
+            data.map((item) => {
+              console.log('httputil' + item.name + item.amount)
             })
           } else {
             Alert(`错误：网络错误QAQ！`)
@@ -125,8 +125,8 @@ struct Index {
           if (code == '0') {
             clearTimeout(detectQuery)
             this.propertyAmount = data;
-            data.map((item)=>{
-              console.log('httputil'+item.name+item.amount)
+            data.map((item) => {
+              console.log('httputil' + item.name + item.amount)
             })
           } else {
             Alert(`错误：网络错误QAQ！`)
@@ -199,7 +199,7 @@ struct Index {
           }.height('6%').width('95%')
         }.width('95%')
         // TODO：pet主体，目前采用的是image，但是实现需求里的交互应该要换组件
-        Pet({userid: this.userid})
+        Pet({ userid: this.userid })
         // TODO：底下的三个button
         Flex({ alignItems: ItemAlign.Start, justifyContent: FlexAlign.SpaceBetween }) {
           Column() {
@@ -265,12 +265,21 @@ struct Index {
             .onFocus(() => {
               console.info('获取焦点')
             })
+            .onClick(() => {
+              if (!AppStorage.Has('newHistoryId')) {
+                useGetMaxHistoryId(this.userid)
+              }
+            })
           Image($r('app.media.message_send'))
             .width(30)
             .rotate({
               angle: 45,
             })
-            .onClick(() => console.info('发送信息'))
+            .onClick(async () => {
+              let answer = await usePostMessage(this.userid,this.text)
+              this.text = ''
+              Alert(answer) //TODO： 如何展示回复的消息
+            })
         }.width('100%')
         .alignItems(VerticalAlign.Center)
         .justifyContent(FlexAlign.Center)

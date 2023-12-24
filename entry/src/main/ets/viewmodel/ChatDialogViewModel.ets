@@ -76,13 +76,6 @@ class ChatDialogViewModel {
   useGetDefaultDialogue(): ChatDialogue[] {
     return fakeDialogueList;
   }
-
-  useSendMessage(message: string) {
-    return usePost<Dialogue, Message>('', {
-      userId: 0,
-      content: message
-    })
-  }
 }
 
 const fakeDialogueList: ChatDialogue[] = [

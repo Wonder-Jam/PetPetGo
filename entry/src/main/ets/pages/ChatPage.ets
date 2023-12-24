@@ -18,17 +18,17 @@ struct ChatPage {
     console.log('show')
     PreferencesUtils.preferencesGet('userid', -1).then((id) => {
       this.userId = String(id); // 这里的赋值是异步的
+      this.useChatHistoryPage()
     }).catch((err) => {
       console.log('preference error' + err)
     });
-    this.useChatHistoryPage()
   }
 
   async useChatHistoryPage() {
     let result = await ChatDialogViewModel.useGetHistoryDialogue({
       userId: +this.userId,
       cursor: null,
-      petId: 1, // TODO:这里默认为1
+      petId: +this.userId,
       historyId: +this.historyId
     })
     this.dialogs = result
@@ -40,7 +40,7 @@ struct ChatPage {
     }
     const data = await ChatDialogViewModel.usePostMessage({
       userId: +this.userId,
-      petId: 1,
+      petId: +this.userId,
       content: this.text,
       historyId: +this.historyId
     })
