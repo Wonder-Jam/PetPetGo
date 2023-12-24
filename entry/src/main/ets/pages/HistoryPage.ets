@@ -9,7 +9,7 @@ import PreferencesUtils from '../common/utils/PreferencesUtils';
 @Entry
 @Component
 struct HistoryPage {
-  @State historyList: HistoryItem[] = HistoryListViewModel.useGetDefaultHistoryList();
+  @State historyList: HistoryItem[] = [];
   private userid = ''
 
   aboutToAppear() {
@@ -28,7 +28,10 @@ struct HistoryPage {
 
   async useHistoryList() {
     const list = await HistoryListViewModel.useGetHistoryList(this.userid)
-    console.info(list.toString())
+    this.historyList = list.map(value => ({
+      ...value,
+      lastChatAt:new Date(value.lastChatAt).toISOString().split('T')[0]
+    }))
   }
 
   build() {
