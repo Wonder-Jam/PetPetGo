@@ -25,6 +25,7 @@ export interface DialogRequest {
   cursor: number
   petId: number
   historyId: number
+  size: number
 }
 
 export interface MessageRequest {

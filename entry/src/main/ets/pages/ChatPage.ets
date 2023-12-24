@@ -1,6 +1,6 @@
 import router from '@ohos.router'
 import PreferencesUtils from '../common/utils/PreferencesUtils'
-import ChatDialogViewModel, { ChatDialogue } from '../viewmodel/ChatDialogViewModel'
+import ChatDialogViewModel, { ChatDialogue, Dialogue } from '../viewmodel/ChatDialogViewModel'
 
 @Entry
 @Component
@@ -10,7 +10,7 @@ struct ChatPage {
   controller: TextAreaController = new TextAreaController()
   private userId = ''
   @State text: string = ''
-  @State dialogs: ChatDialogue[] = [];
+  @State dialogs: Dialogue[] = [];
   @State historyId: string = router.getParams()['historyId'] ?? ''
   @State title: string = router.getParams()['title'] ?? ''
 
@@ -28,24 +28,38 @@ struct ChatPage {
     let result = await ChatDialogViewModel.useGetHistoryDialogue({
       userId: +this.userId,
       cursor: null,
+      size: null,
       petId: +this.userId,
       historyId: +this.historyId
     })
-    this.dialogs = result
+    this.dialogs = result.map(value => ({
+      answer: value.dialogue.answer,
+      question: value.dialogue.question
+    }))
   }
 
   async sendMessage() {
     if (this.text === '') {
       return
     }
+    this.dialogs.push({
+      answer: '',
+      question: this.text
+    })
+    let content = this.text
+    this.text = '' // 提前清空
+    this.scroller.scrollEdge(Edge.Bottom)
     const data = await ChatDialogViewModel.usePostMessage({
       userId: +this.userId,
       petId: +this.userId,
-      content: this.text,
+      content: content,
       historyId: +this.historyId
     })
-    this.dialogs.push(data)
-    this.text = ''
+    this.dialogs[this.dialogs.length -1] = {
+      question: content,
+      answer: data.dialogue.answer
+    }
+    console.log(JSON.stringify(this.dialogs[this.dialogs.length - 1]))
     setTimeout(() => {
       this.scroller.scrollEdge(Edge.Bottom)
     }, 15) // 很蹩脚的实现-等到UI更新后在滚动
@@ -54,10 +68,10 @@ struct ChatPage {
   build() {
     Column() {
       List({ scroller: this.scroller }) {
-        ForEach(this.dialogs, (item: ChatDialogue, index) => {
+        ForEach(this.dialogs, (item: Dialogue, index) => {
           ListItem() {
             Column() {
-              Text(item.dialogue.question)
+              Text(item.question)
                 .width('90%')
                 .borderRadius({
                   topLeft: 15,
@@ -70,22 +84,29 @@ struct ChatPage {
                 .margin({ left: 10, right: 10, top: 20 })
                 .lineHeight(20)
                 .padding(10)
-              Text(item.dialogue.answer)
-                .width('90%')
-                .borderRadius({
-                  topLeft: 15,
-                  topRight: 15,
-                  bottomLeft: 0,
-                  bottomRight: 15
-                })
-                .backgroundColor(0xEEF2FD)
-                .fontSize(16)
-                .margin({ left: 10, right: 10, top: 20 })
-                .lineHeight(20)
-                .padding(10)
+              if (item.answer !== '') {
+                Text(item.answer)
+                  .width('90%')
+                  .borderRadius({
+                    topLeft: 15,
+                    topRight: 15,
+                    bottomLeft: 0,
+                    bottomRight: 15
+                  })
+                  .backgroundColor(0xEEF2FD)
+                  .fontSize(16)
+                  .margin({ left: 10, right: 10, top: 20 })
+                  .lineHeight(20)
+                  .padding(10)
+              } else {
+                Progress({ value: 75, total: 150, type: ProgressType.ScaleRing })
+                  .color(Color.Grey).value(50).width(30)
+                  .style({ strokeWidth: 20, scaleCount: 30, scaleWidth: 3 })
+              }
             }
           }
-        }, item => item)
+        }, item => JSON.stringify(item))
+      //   https://developer.huawei.com/consumer/cn/forum/topic/0203944139717840171?fid=0102683795438680754
       }
       .width('100%')
       .height('90%')
