@@ -51,11 +51,11 @@ async function useHttpRequest<ResponseData, RequestData extends object | undefin
     console.log('httputil request received!')
     let isTokenInvalid: boolean = true;
     isTokenInvalid = value.responseCode === http.ResponseCode.UNAUTHORIZED
-    console.log('httputil tokeninvalid', isTokenInvalid)
-    console.log('httputil code', value.responseCode)
-    console.log('httputil value',JSON.stringify(value.result))
+    // console.log('httputil tokeninvalid', isTokenInvalid)
+    // console.log('httputil code', value.responseCode)
+    // console.log('httputil value',JSON.stringify(value.result))
     if (value.responseCode === http.ResponseCode.OK) {
-      console.log('httputil token ok')
+      // console.log('httputil token ok')
       let result = `${value.result}`;
       let resultJson: Response<ResponseData> = JSON.parse(result);
       console.log('header', JSON.stringify(value.header))
