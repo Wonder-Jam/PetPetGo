@@ -57,7 +57,7 @@ export async function getAMediaAndRes(fullness: number, cleanliness: number, moo
     return answer
   } else if (fullness <= 60 || cleanliness <= 60 || mood <= 60) {
     let choice = Math.floor(Math.random() * unhappyState.length);
-    let answer = {}
+    let answer = {url: $r('app.media.looking_stupid'), res: ''}
     answer['url'] = unhappyState[choice].url
     answer['res'] = randomFlag
       ? await useGet<string, undefined>(WebConstants.TEST_ENVIRONMENT+`/chitchat?userId=${id as number}`).then(({data})=>data)
@@ -65,7 +65,7 @@ export async function getAMediaAndRes(fullness: number, cleanliness: number, moo
     return answer
   } else if (fullness <= 80 || cleanliness <= 80 || mood <= 80) {
     let choice = Math.floor(Math.random() * normalState.length);
-    let answer = {}
+    let answer = {url: $r('app.media.looking_stupid'), res: ''}
     answer['url'] = normalState[choice].url
     answer['res'] = randomFlag
       ? await useGet<string, undefined>(WebConstants.TEST_ENVIRONMENT+`/chitchat?userId=${id as number}`).then(({data})=>data)
@@ -73,7 +73,7 @@ export async function getAMediaAndRes(fullness: number, cleanliness: number, moo
     return answer
   } else {
     let choice = Math.floor(Math.random() * happyState.length);
-    let answer = {}
+    let answer = {url: $r('app.media.looking_stupid'), res: ''}
     answer['url'] = happyState[choice].url
     answer['res'] = randomFlag
       ? await useGet<string, undefined>(WebConstants.TEST_ENVIRONMENT+`/chitchat?userId=${id as number}`).then(({data})=>data)

@@ -25,9 +25,11 @@ export struct Pet {
   private particleColor = [Color.Red, Color.Blue, Color.Green, Color.Orange, Color.Pink, Color.Orange, Color.Yellow, Color.Gray]
   aboutToAppear(){
     let stateMediaAndRes = getAMediaAndRes(this.fullness, this.cleanliness, this.mood)
+    stateMediaAndRes.then((value)=>{
+      this.url = value.url;
+      this.dialog = value.res
+    })
     this.showDialog = true;
-    this.url=stateMediaAndRes.url;
-    this.dialog=stateMediaAndRes.res;
     setTimeout(()=>{
       this.showDialog=false;
     }, 3000)
@@ -41,11 +43,13 @@ export struct Pet {
         .borderRadius(30)
         // .border({width:1, color:Color.Gray})
         .objectFit(ImageFit.Contain)
-        .onClick(() => {
+        .onClick( () => {
           let stateMediaAndRes = getAMediaAndRes(this.fullness, this.cleanliness, this.mood)
+          stateMediaAndRes.then((value)=>{
+            this.url = value.url;
+            this.dialog = value.res
+          })
           this.showDialog = true;
-          this.url=stateMediaAndRes.url;
-          this.dialog=stateMediaAndRes.res;
           this.particleAnimationFlag=true;
           this.showParticle=Visibility.Visible
           if(Math.random()<1){
