@@ -1,6 +1,7 @@
 import router from '@ohos.router'
 import PreferencesUtils from '../common/utils/PreferencesUtils'
 import ChatDialogViewModel, { ChatDialogue, Dialogue } from '../viewmodel/ChatDialogViewModel'
+import promptAction from '@ohos.promptAction'
 
 @Entry
 @Component
@@ -11,8 +12,11 @@ struct ChatPage {
   private userId = ''
   @State text: string = ''
   @State dialogs: Dialogue[] = [];
+  @State minDialogueNo: number = -1;
   @State historyId: string = router.getParams()['historyId'] ?? ''
   @State title: string = router.getParams()['title'] ?? ''
+  @State hasMore: boolean = true
+  @State isRefreshing: boolean = false
 
   onPageShow() {
     console.log('show')
@@ -22,6 +26,9 @@ struct ChatPage {
     }).catch((err) => {
       console.log('preference error' + err)
     });
+    setTimeout(() => {
+      this.scroller.scrollEdge(Edge.Bottom)
+    }, 300)
   }
 
   async useChatHistoryPage() {
@@ -36,6 +43,44 @@ struct ChatPage {
       answer: value.dialogue.answer,
       question: value.dialogue.question
     }))
+    this.minDialogueNo = result.reduce((minDialogueNo, current) => {
+      return Math.min(minDialogueNo, current.dialogueNo);
+    }, Number.MAX_VALUE);
+    console.log("minDialogueNo is " + this.minDialogueNo.toString());
+  }
+
+  async useLoadMore() {
+    if(this.hasMore){
+      let result = await ChatDialogViewModel.useGetHistoryDialogue({
+        userId: +this.userId,
+        cursor: this.minDialogueNo,
+        petId: +this.userId,
+        historyId: +this.historyId,
+        size: null
+      })
+      this.minDialogueNo = result.reduce((minDialogueNo, current) => {
+        return Math.min(minDialogueNo, current.dialogueNo);
+      }, Number.MAX_VALUE);
+      console.log("minDialogueNo is " + this.minDialogueNo.toString());
+
+      if(result.length == 0) {
+        this.hasMore = false
+        promptAction.showToast({
+          message: "没有更多信息啦"
+        })
+      }
+      let flattened_result = result.map(value => ({
+        answer: value.dialogue.answer,
+        question: value.dialogue.question
+      }))
+      let loaded_dialogs = [...flattened_result, ...this.dialogs];
+      this.dialogs = loaded_dialogs
+      this.scroller.scrollToIndex(result.length) // 滚动到刷新的位置
+    } else {
+      promptAction.showToast({
+        message: "没有更多信息啦"
+      })
+    }
   }
 
   async sendMessage() {
@@ -67,57 +112,68 @@ struct ChatPage {
 
   build() {
     Column() {
-      List({ scroller: this.scroller }) {
-        ForEach(this.dialogs, (item: Dialogue, index) => {
-          ListItem() {
-            Column() {
-              Text(item.question)
-                .width('90%')
-                .borderRadius({
-                  topLeft: 15,
-                  topRight: 15,
-                  bottomLeft: 15,
-                  bottomRight: 0
-                })
-                .backgroundColor(0xDCDCDC)
-                .fontSize(16)
-                .margin({ left: 10, right: 10, top: 20 })
-                .lineHeight(20)
-                .padding(10)
-              if (item.answer !== '') {
-                Text(item.answer)
+      Refresh({ refreshing: $$this.isRefreshing, offset: 0, friction: 62 }) {
+        List({ scroller: this.scroller }) {
+          ForEach(this.dialogs, (item: Dialogue, index) => {
+            ListItem() {
+              Column() {
+                Text(item.question)
                   .width('90%')
                   .borderRadius({
                     topLeft: 15,
                     topRight: 15,
-                    bottomLeft: 0,
-                    bottomRight: 15
+                    bottomLeft: 15,
+                    bottomRight: 0
                   })
-                  .backgroundColor(0xEEF2FD)
+                  .backgroundColor(0xDCDCDC)
                   .fontSize(16)
                   .margin({ left: 10, right: 10, top: 20 })
                   .lineHeight(20)
                   .padding(10)
-              } else {
-                LoadingProgress().color('#AC49F5')
-                  .width(50)
-                  .height(50)
+                if (item.answer !== '') {
+                  Text(item.answer)
+                    .width('90%')
+                    .borderRadius({
+                      topLeft: 15,
+                      topRight: 15,
+                      bottomLeft: 0,
+                      bottomRight: 15
+                    })
+                    .backgroundColor(0xEEF2FD)
+                    .fontSize(16)
+                    .margin({ left: 10, right: 10, top: 20 })
+                    .lineHeight(20)
+                    .padding(10)
+                } else {
+                  LoadingProgress().color('#AC49F5')
+                    .width(50)
+                    .height(50)
+                }
               }
             }
-          }
-        }, item => JSON.stringify(item))
-      //   https://developer.huawei.com/consumer/cn/forum/topic/0203944139717840171?fid=0102683795438680754
+          }, item => JSON.stringify(item))
+          //   https://developer.huawei.com/consumer/cn/forum/topic/0203944139717840171?fid=0102683795438680754
+        }
+        .width('100%')
+        .height('90%')
+        .listDirection(Axis.Vertical) // 滚动方向纵向
+        .scrollBar(BarState.Auto) // 滚动条常驻显示
+        .edgeEffect(EdgeEffect.None)
+        .onScroll((xOffset: number, yOffset: number) => {
+          console.info(xOffset + ' ' + yOffset)
+        })
+        .onReachEnd(() => {
+          console.info('To the edge')
+        })
       }
-      .width('100%')
-      .height('90%')
-      .listDirection(Axis.Vertical) // 滚动方向纵向
-      .scrollBar(BarState.Auto) // 滚动条常驻显示
-      .edgeEffect(EdgeEffect.None)
-      .onScroll((xOffset: number, yOffset: number) => {
-        console.info(xOffset + ' ' + yOffset)
+      .onStateChange((refreshStatus: RefreshStatus) => {
+        console.info('Refresh onStatueChange state is ' + refreshStatus)
       })
-      .onReachEnd(() => {
-        console.info('To the edge')
+      .onRefreshing(() => {
+        setTimeout(() => {
+          this.useLoadMore()
+          this.isRefreshing = false
+        }, 1000)
       })
 
       Row() {
