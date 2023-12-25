@@ -99,9 +99,9 @@ struct ChatPage {
                   .lineHeight(20)
                   .padding(10)
               } else {
-                Progress({ value: 75, total: 150, type: ProgressType.ScaleRing })
-                  .color(Color.Grey).value(50).width(30)
-                  .style({ strokeWidth: 20, scaleCount: 30, scaleWidth: 3 })
+                LoadingProgress().color('#AC49F5')
+                  .width(50)
+                  .height(50)
               }
             }
           }

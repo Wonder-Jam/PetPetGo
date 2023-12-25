@@ -90,7 +90,7 @@ export async function useGetMaxHistoryId(userid) {
   })
 }
 
-export async function usePostMessage(userId,content){
+export async function usePostMessage(userId:number,content:string){
   let result = await ChatDialogViewModel.usePostMessage({
     userId: userId,
     petId: userId,
