@@ -204,6 +204,9 @@ struct Index {
         }.width('95%')
         // TODO：pet主体，目前采用的是image，但是实现需求里的交互应该要换组件
         Pet({ userid: this.userid })
+          .onClick(() => {
+            focusControl.requestFocus('1')
+          })
         // TODO：底下的三个button
         if (!this.isHidden) {
           Flex({ alignItems: ItemAlign.Start, justifyContent: FlexAlign.SpaceBetween }) {
@@ -289,19 +292,31 @@ struct Index {
             })
             .onFocus(() => {
               console.info('获取焦点')
+              animateTo({ duration: 500 }, () => {
+                this.isHidden = true
+              })
             })
             .onBlur(() => {
-              this.isHidden = false
+              animateTo({ duration: 500 }, () => {
+                this.isHidden = false
+              })
               console.log('blur')
             })
             .onClick(() => {
               if (!AppStorage.Has('newHistoryId')) {
                 useGetMaxHistoryId(this.userid)
               }
-              animateTo({ duration: 500 }, () => {
-                this.isHidden = !this.isHidden
-              })
             })
+            .defaultFocus(false)
+            .focusOnTouch(true)
+            .key('0')
+          Button()
+            .focusable(true)
+            .defaultFocus(true)
+            .width(0)
+            .height(0)
+            .visibility(Visibility.Hidden)
+            .key('1')
           Image($r('app.media.message_send'))
             .width(30)
             .rotate({
@@ -317,7 +332,9 @@ struct Index {
         }.width('100%')
         .alignItems(VerticalAlign.Center)
         .justifyContent(FlexAlign.Center)
-      }
+      }.onClick(() => {
+        focusControl.requestFocus('1')
+      })
 
       if (this.show) {
         Column()
