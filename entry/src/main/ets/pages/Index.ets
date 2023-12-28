@@ -3,7 +3,7 @@ import { Pet } from '../Components/Pet'
 import FormUtils from '../common/utils/FormUtils'
 import BackgroundUtils from '../common/utils/BackgroundUtil'
 import common from '@ohos.app.ability.common';
-import { getProperties } from '../viewModel/PetMedia'
+import { getProperties, putPropertyUpdate } from '../viewModel/PetMedia'
 import { useGet, usePost } from '../common/utils/HttpUtil'
 import PreferencesUtils from '../common/utils/PreferencesUtils'
 import WebConstants from '../common/constants/WebConstants'
@@ -11,13 +11,13 @@ import { Alert } from '../Components/Dialog';
 import promptAction from '@ohos.promptAction'
 import { getCurrentWeather } from '../viewmodel/WeatherViewModel'
 
-interface resObject {
-  id: Number;
-  amount: Number;
+@Observed
+class resObject {
+  id: number;
+  amount: number;
   name: string;
   type: string;
 }
-
 
 
 PersistentStorage.PersistProp<string>('fullness', '60');
@@ -27,6 +27,7 @@ PersistentStorage.PersistProp<string>('mood', '60');
 
 @Entry
 @Component
+@Observed
 struct Index {
   @State text: string = ''
   @State show: boolean = false;
@@ -37,10 +38,7 @@ struct Index {
   private context: common.UIAbilityContext = getContext(this) as common.UIAbilityContext;
   @State userid: string = ''
   @State properties: Object[] = []
-  // private propertyAmount: Map<Number, {amount: Number}> =  new Map<Number, {amount: Number}>()
-  // @State food: resObject[] = []
-  // @State medicine: resObject[] = []
-  // @State toy: resObject[] = []
+  @State curType: string = ''
   @State propertyAmount: resObject[] = []
   scroller: Scroller = new Scroller()
 
@@ -55,8 +53,6 @@ struct Index {
       console.log('preference error' + err)
     });
   }
-
-
 
   onPageHide() {
     BackgroundUtils.startContinuousTask(this.context)
@@ -84,9 +80,9 @@ struct Index {
 
   private async pullPanel(type: string) {
     this.properties = getProperties(type)
-    const detectQuery = setTimeout(()=>{
+    const detectQuery = setTimeout(() => {
       promptAction.showToast({
-        message:"网络不畅，正在请求"
+        message: "网络不畅，正在请求"
       })
     }, 2000)
 
@@ -97,41 +93,44 @@ struct Index {
           if (code == '0') {
             clearTimeout(detectQuery)
             this.propertyAmount = data;
-            console.log('httputil'+data)
-            data.map((item)=>{
-              console.log('httputil'+item.name+item.amount)
+            console.log('httputil' + data)
+            data.map((item) => {
+              console.log('httputil' + item.name + item.amount)
             })
           } else {
             console.log('httputil error')
             Alert(`错误：网络错误QAQ！`)
           }
         })
+        this.curType = 'food'
         break
       case 'medicine':
         await useGet<resObject[], undefined>(WebConstants.TEST_ENVIRONMENT + `/user/${this.userid??'nan'}/prop?type=medicine`).then(async ({code, msg, data}) => {
           if (code == '0') {
             clearTimeout(detectQuery)
             this.propertyAmount = data;
-            data.map((item)=>{
-              console.log('httputil'+item.name+item.amount)
+            data.map((item) => {
+              console.log('httputil' + item.name + item.amount)
             })
           } else {
             Alert(`错误：网络错误QAQ！`)
           }
         })
+        this.curType = 'medicine'
         break
       case 'toys':
         await useGet<resObject[], undefined>(WebConstants.TEST_ENVIRONMENT + `/user/${this.userid??'nan'}/prop?type='toy'`).then(async ({code, msg, data}) => {
           if (code == '0') {
             clearTimeout(detectQuery)
             this.propertyAmount = data;
-            data.map((item)=>{
-              console.log('httputil'+item.name+item.amount)
+            data.map((item) => {
+              console.log('httputil' + item.name + item.amount)
             })
           } else {
             Alert(`错误：网络错误QAQ！`)
           }
         })
+        this.curType = 'toys'
         break
     }
     this.show = true;
@@ -175,6 +174,11 @@ struct Index {
               .height(10)
               .margin({ top: 10 })
               .color('#7B68EE')
+              .animation({
+                duration: 300,
+                iterations: 1,
+                curve: Curve.Linear
+              })
             Text("" + this.fullness).margin({ left: 5 })
           }.height('6%').width('95%')
 
@@ -199,7 +203,7 @@ struct Index {
           }.height('6%').width('95%')
         }.width('95%')
         // TODO：pet主体，目前采用的是image，但是实现需求里的交互应该要换组件
-        Pet({userid: this.userid})
+        Pet({ userid: this.userid })
         // TODO：底下的三个button
         Flex({ alignItems: ItemAlign.Start, justifyContent: FlexAlign.SpaceBetween }) {
           Column() {
@@ -208,7 +212,7 @@ struct Index {
               .width(80)
               .onClick(() => {
                 if (Number(this.fullness) < 100) {
-                  this.fullness = String(Number(this.fullness) + 10);
+                  // this.fullness = String(Number(this.fullness) + 10);
                   this.updateForm();
                 }
                 this.pullPanel('food')
@@ -222,7 +226,7 @@ struct Index {
               .width(80)
               .onClick(() => {
                 if (Number(this.mood) < 100) {
-                  this.mood = String(Number(this.mood) + 10);
+                  // this.mood = String(Number(this.mood) + 10);
                   this.updateForm()
                 }
                 ;
@@ -237,7 +241,7 @@ struct Index {
               .width(80)
               .onClick(() => {
                 if (Number(this.cleanliness) < 100) {
-                  this.cleanliness = String(Number(this.cleanliness) + 10);
+                  // this.cleanliness = String(Number(this.cleanliness) + 10);
                   this.updateForm();
                 }
                 this.pullPanel('medicine')
@@ -311,7 +315,17 @@ struct Index {
                     .fontSize(12)
                     .height(12)
                 }
-              }.height(100)
+              }.height(100).onClick(() => {
+                this.fullness = String(Number(this.fullness) + item.effect[0])
+                this.cleanliness = String(Number(this.cleanliness) + item.effect[1])
+                this.mood = String(Number(this.mood) + item.effect[2])
+                putPropertyUpdate(this.curType, item, this.userid, -1);
+                // TODO: 如果要把forEach里面的数据-1，需要涉及到observed和objectlink，这部分还没有看懂
+                this.show = false;
+                // (this.propertyAmount.find(obj => obj.name === item.text)).amount--
+                // console.log('index'+(this.propertyAmount.find(obj => obj.name === item.text)).amount)
+                // this.propertyAmount = this.propertyAmount
+              })
             }, (item) => {
               return item.id
             })
