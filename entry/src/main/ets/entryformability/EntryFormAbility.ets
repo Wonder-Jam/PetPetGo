@@ -54,7 +54,7 @@ export default class EntryFormAbility extends FormExtensionAbility {
   onFormEvent(formId, message) {
     // Called when a specified message event defined by the form provider is triggered.
     let msg = JSON.parse(message)
-    let stateMediaAndRes = getAMediaAndRes(Number(msg.fullness), Number(msg.cleanliness), Number(msg.mood)).then((value)=>{
+    getAMediaAndRes(Number(msg.fullness), Number(msg.cleanliness), Number(msg.mood)).then((value)=>{
       let formData = {
         'url': value.url,
         'dialog': value.res,

@@ -11,6 +11,7 @@ import { Alert } from '../Components/Dialog';
 import promptAction from '@ohos.promptAction'
 import { getCurrentWeather } from '../viewmodel/WeatherViewModel'
 import { useGetMaxHistoryId, usePostMessage } from '../viewmodel/PetMedia';
+import abilityAccessCtrl, { Permissions } from '@ohos.abilityAccessCtrl';
 import App from '@system.app';
 
 @Observed
@@ -46,18 +47,77 @@ struct Index {
   @State isLoadingAnswer: boolean = false
   @State answer: string = '快来和我聊天吧(*≧▽≦)'
   scroller: Scroller = new Scroller()
+  reqPermissionsFromUser = async (permissions: Array<Permissions>): Promise<boolean> => {
+    let context = getContext(this) as common.UIAbilityContext;
+    let atManager = abilityAccessCtrl.createAtManager();
+    // requestPermissionsFromUser会判断权限的授权状态来决定是否唤起弹窗
+    const permissionData = await atManager.requestPermissionsFromUser(context, permissions)
+    //   .then((data) => {
+    //   let grantStatus: Array<number> = data.authResults;
+    //   let length: number = grantStatus.length;
+    //   for (let i = 0; i < length; i++) {
+    //     if (grantStatus[i] === 0) {
+    //       // 用户授权，可以继续访问目标操作
+    //       return true;
+    //     } else {
+    //       // 用户拒绝授权，提示用户必须授权才能访问当前页面的功能，并引导用户到系统设置中打开相应的权限
+    //       promptAction.showToast({
+    //         message: "主人，我需要大致的定位信息才能提醒你天气哦~"
+    //       })
+    //       return false;
+    //     }
+    //   }
+    //   return false;
+    //   // 授权成功
+    // }).catch((err) => {
+    //   console.error(`requestPermissionsFromUser failed, code is ${err.code}, message is ${err.message}`);
+    //   return false;
+    // })
+    let grantStatus: Array<number> = permissionData.authResults;
+    let length: number = grantStatus.length;
+    for (let i = 0; i < length; i++) {
+      if (grantStatus[i] === 0) {
+        // 用户授权，可以继续访问目标操作
+        return true;
+      } else {
+        // 用户拒绝授权，提示用户必须授权才能访问当前页面的功能，并引导用户到系统设置中打开相应的权限
+        promptAction.showToast({
+          message: "主人，我需要大致的定位信息才能提醒你天气哦~"
+        })
+        return false;
+      }
+    }
+    return false;
+  }
+
+  openPermissionsInSystemSettings(): void {
+  let context = getContext(this) as common.UIAbilityContext;
+  let wantInfo = {
+    action: 'action.settings.app.info',
+    parameters: {
+      settingsParamBundleName: 'com.example.myapplication' // 打开指定应用的详情页面
+    }
+  }
+  context.startAbility(wantInfo).then(() => {
+    // ...
+  }).catch((err) => {
+    // ...
+  })
+}
 
   async onPageShow() {
     console.log('onPageShow~')
     BackgroundUtils.stopContinuousTask(this.context)
     console.log('map: ' + this.propertyAmount)
-    getCurrentWeather()
+
+    this.reqPermissionsFromUser(['ohos.permission.APPROXIMATELY_LOCATION'])&&getCurrentWeather()
     PreferencesUtils.preferencesGet('userid', -1).then((id) => {
       this.userid = String(id);
       console.log(String(id), 'id')
     }).catch((err) => {
       console.log('preference error' + err)
     });
+
   }
 
   onPageHide() {
