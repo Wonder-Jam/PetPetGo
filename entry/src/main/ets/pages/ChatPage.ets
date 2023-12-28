@@ -76,6 +76,9 @@ struct ChatPage {
       let loaded_dialogs = [...flattened_result, ...this.dialogs];
       this.dialogs = loaded_dialogs
       this.scroller.scrollToIndex(result.length) // 滚动到刷新的位置
+      setTimeout(() => {
+        this.scroller.scrollBy(0,-100)
+      }, 100)
     } else {
       promptAction.showToast({
         message: "没有更多信息啦"
