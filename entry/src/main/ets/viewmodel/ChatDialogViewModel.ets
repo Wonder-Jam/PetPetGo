@@ -25,12 +25,14 @@ export interface DialogRequest {
   cursor: number
   petId: number
   historyId: number
+  size: number
 }
 
 export interface MessageRequest {
-  useId: number
+  userId: number
   petId: number
   content: string
+  historyId: number
 }
 
 export interface MessageResponse {
@@ -50,7 +52,7 @@ class ChatDialogViewModel {
 
   async useGetHistoryDialogue(params: DialogRequest): Promise<ChatDialogue[]> {
     const response = await usePost<ChatDialogue[], DialogRequest>(WebConstants.TEST_ENVIRONMENT + '/dialogues', params)
-    return response.data;
+    return response.data.reverse();
   }
 
   async usePostMessage(params: MessageRequest): Promise<MessageResponse> {
@@ -61,7 +63,7 @@ class ChatDialogViewModel {
   useGetMockMessage(params: MessageRequest): MessageResponse {
     return {
       id: 7,
-      userId: params.useId,
+      userId: params.userId,
       petId: params.petId,
       dialogueNo: 1,
       dialogue: {
@@ -74,13 +76,6 @@ class ChatDialogViewModel {
 
   useGetDefaultDialogue(): ChatDialogue[] {
     return fakeDialogueList;
-  }
-
-  useSendMessage(message: string) {
-    return usePost<Dialogue, Message>('', {
-      userId: 0,
-      content: message
-    })
   }
 }
 

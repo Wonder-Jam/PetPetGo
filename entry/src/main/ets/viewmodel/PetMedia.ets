@@ -1,33 +1,94 @@
-import { usePut } from '../common/utils/HttpUtil'
+
+import { useGet, usePut } from '../common/utils/HttpUtil'
 import WebConstants from '../common/constants/WebConstants'
+import { HistoryItem } from './HistoryListViewModel'
+import ChatDialogViewModel from './ChatDialogViewModel'
+import PreferencesUtils from '../common/utils/PreferencesUtils'
+
+function getRandomInt(max) {
+  return Math.floor(Math.random() * max);
+}
 
 
-export function getAMediaAndRes(fullness: number, cleanliness: number, mood: number) {
-  if (fullness <= 20 && cleanliness <= 20 && mood <= 20) {
-    return { url: $r('app.media.hungry_and_begging'), res: '我又饿又难过，还生病了呜呜呜...' }
-  } else if (fullness <= 20 && cleanliness <= 20) {
-    return { url: $r('app.media.sad_and_cry'), res: '我好饿...好像还生病了...' }
-  } else if (fullness <= 20 && mood <= 20) {
-    return { url: $r('app.media.sad_and_cry'), res: '我好饿...好伤心...' }
-  } else if (mood <= 20 && cleanliness <= 20) {
-    return { url: $r('app.media.sad_and_cry'), res: '我好难过...好像还生病了...' }
-  } else if (fullness < 20) {
-    return { url: $r('app.media.eating_mud'), res: '好饿哟...已经在吃土了...' }
-  } else if (cleanliness < 20) {
-    return { url: $r('app.media.hungry_and_begging'), res: '好饿哟...已经在吃土了...' }
-  } else if (mood < 20) {
-    return { url: $r('app.media.angry_and_sad'), res: '主人你不要我了么！' }
+export async function getAMediaAndRes(fullness: number, cleanliness: number, mood: number) {
+  let randomFlag = false
+  if (getRandomInt(3)<2){ randomFlag = true }
+  let id = await PreferencesUtils.preferencesGet('userid')
+
+  if (fullness <= 20 && cleanliness <= 20 && mood <= 20) { /* 三种状态值均小于等于20 */
+    let answer = { url: $r('app.media.hungry_and_begging'), res: '我又饿又难过，还生病了呜呜呜...' }
+    if (randomFlag) {
+      const res = await useGet<string, undefined>(WebConstants.TEST_ENVIRONMENT+`/chitchat?userId=${id as number}`)
+      answer.res=res.data
+    }
+    return answer
+  } else if (fullness <= 20 && cleanliness <= 20) { /* 仅情绪大于20 */
+    let answer = { url: $r('app.media.sad_and_cry'), res: '我好饿...好像还生病了...' }
+    if (randomFlag) {
+      const res = await useGet<string, undefined>(WebConstants.TEST_ENVIRONMENT+`/chitchat?userId=${id as number}`)
+      answer.res=res.data
+    }
+    return answer
+  } else if (fullness <= 20 && mood <= 20) { /* 仅清洁大于20 */
+    let answer = { url: $r('app.media.sad_and_cry'), res: '我好饿...好伤心...' }
+    if (randomFlag) {
+      const res = await useGet<string, undefined>(WebConstants.TEST_ENVIRONMENT+`/chitchat?userId=${id as number}`)
+      answer.res=res.data
+    }
+    return answer
+  } else if (mood <= 20 && cleanliness <= 20) { /* 仅饱食大于20 */
+    let answer = { url: $r('app.media.sad_and_cry'), res: '我好难过...好像还生病了...' }
+    if (randomFlag) {
+      const res = await useGet<string, undefined>(WebConstants.TEST_ENVIRONMENT+`/chitchat?userId=${id as number}`)
+      answer.res=res.data
+    }
+    return answer
+  } else if (fullness < 20) { /* 仅饱食不大于20 */
+    let answer = { url: $r('app.media.eating_mud'), res: '好饿哟...已经在吃土了...' }
+    if (randomFlag) {
+      const res = await useGet<string, undefined>(WebConstants.TEST_ENVIRONMENT+`/chitchat?userId=${id as number}`)
+      answer.res=res.data
+    }
+    return answer
+  } else if (cleanliness < 20) { /* 仅清洁不大于20 */
+    let answer = { url: $r('app.media.hungry_and_begging'), res: '好饿哟...已经在吃土了...' }
+    if (randomFlag) {
+      const res = await useGet<string, undefined>(WebConstants.TEST_ENVIRONMENT+`/chitchat?userId=${id as number}`)
+      answer.res=res.data
+    }
+    return answer
+  } else if (mood < 20) { /* 仅情绪不大于20 */
+    let answer = { url: $r('app.media.angry_and_sad'), res: '主人你不要我了么！' }
+    if (randomFlag) {
+      const res = await useGet<string, undefined>(WebConstants.TEST_ENVIRONMENT+`/chitchat?userId=${id as number}`)
+      answer.res=res.data
+    }
+    return answer
   } else if (fullness <= 60 || cleanliness <= 60 || mood <= 60) {
     let choice = Math.floor(Math.random() * unhappyState.length);
-    return unhappyState[choice]
+    let answer = {url: $r('app.media.looking_stupid'), res: ''}
+    answer['url'] = unhappyState[choice].url
+    answer['res'] = randomFlag
+      ? (await useGet<string, undefined>(WebConstants.TEST_ENVIRONMENT+`/chitchat?userId=${id as number}`)).data
+      : unhappyState[choice].res
+    return answer
   } else if (fullness <= 80 || cleanliness <= 80 || mood <= 80) {
     let choice = Math.floor(Math.random() * normalState.length);
-    return normalState[choice]
+    let answer = {url: $r('app.media.looking_stupid'), res: ''}
+    answer['url'] = normalState[choice].url
+    answer['res'] = randomFlag
+      ? (await useGet<string, undefined>(WebConstants.TEST_ENVIRONMENT+`/chitchat?userId=${id as number}`)).data
+      : normalState[choice].res
+    return answer
   } else {
     let choice = Math.floor(Math.random() * happyState.length);
-    return happyState[choice]
+    let answer = {url: $r('app.media.looking_stupid'), res: ''}
+    answer['url'] = happyState[choice].url
+    answer['res'] = randomFlag
+      ? (await useGet<string, undefined>(WebConstants.TEST_ENVIRONMENT+`/chitchat?userId=${id as number}`)).data
+      : happyState[choice].res
+    return answer
   }
-
 }
 
 const unhappyState = [{ url: $r('app.media.looking_stupid'), res: '我是谁？我在哪？我都有点神志不清了捏' }, {
@@ -164,4 +225,24 @@ export function putPropertyUpdate(type: string, property:property, userid: strin
     type: type,
     name: property.text
   }])
+}
+export async function useGetMaxHistoryId(userid) {
+  return new Promise((resolve) => {
+    useGet<undefined, Number>(WebConstants.TEST_ENVIRONMENT + `/historyId/new?userId=${userid}`)
+      .then(({data}) => {
+        resolve(data)
+        AppStorage.SetOrCreate('newHistoryId', data)
+        console.log(AppStorage.Get('newHistoryId'),'newHistoryId')
+      })
+  })
+}
+
+export async function usePostMessage(userId:number,content:string){
+  let result = await ChatDialogViewModel.usePostMessage({
+    userId: userId,
+    petId: userId,
+    content: content,
+    historyId: AppStorage.Get('newHistoryId')
+  })
+  return result.dialogue.answer
 }

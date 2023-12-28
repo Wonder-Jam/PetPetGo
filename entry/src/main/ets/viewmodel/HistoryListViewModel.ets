@@ -2,25 +2,19 @@ import { Alert } from '../Components/Dialog'
 import { useGet } from '../common/utils/HttpUtil'
 import WebConstants from '../common/constants/WebConstants'
 
-export class HistoryItem {
+export interface  HistoryItem {
   historyId: number
   lastAnswer: string
   lastChatAt: string
-  // historyDetailId:string
-  constructor(id, title, lastChatDate) {
-    this.historyId = id
-    this.lastAnswer = title
-    this.lastChatAt = lastChatDate
-  }
 }
 
 export const HistoryItems: HistoryItem[] = [
-  new HistoryItem(1, '日本花样滑冰运动员羽生结弦社媒发文宣布离婚，距结婚仅 3 个月，哪些信息值得关注', '2023-11-08'),
-  new HistoryItem(2, '如何评价缅方11月15日组织对明学昌抓捕期间，明学昌畏罪自杀身亡，其儿女被成功抓获并移交我国公安机关', '2023-11-08'),
-  new HistoryItem(3, '明学昌畏罪自杀身亡，其儿女被成功抓获并移交我国公安机关', '2023-08-08'),
-  new HistoryItem(4, 'item4', '2023-03-08'),
-  new HistoryItem(5, 'item5', '2023-01-08'),
-  new HistoryItem(6, 'item6', '2023-01-09'),
+  { historyId: 1, lastAnswer: '日本花样滑冰运动员羽生结弦社媒发文宣布离婚，距结婚仅 3 个月，哪些信息值得关注', lastChatAt: '2023-11-08' },
+  { historyId: 2, lastAnswer: '如何评价缅方11月15日组织对明学昌抓捕期间，明学昌畏罪自杀身亡，其儿女被成功抓获并移交我国公安机关', lastChatAt: '2023-11-08' },
+  { historyId: 3, lastAnswer: '明学昌畏罪自杀身亡，其儿女被成功抓获并移交我国公安机关', lastChatAt: '2023-08-08' },
+  { historyId: 4, lastAnswer: 'item4', lastChatAt: '2023-03-08' },
+  { historyId: 5, lastAnswer: 'item5', lastChatAt: '2023-01-08' },
+  { historyId: 6, lastAnswer: 'item6', lastChatAt: '2023-01-09' },
 ]
 
 class HistoryListViewModel {
