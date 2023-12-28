@@ -60,6 +60,9 @@
       },
       {
         "name": "ohos.permission.LOCATION"
+      },
+      {
+        "name": "ohos.permission.APPROXIMATELY_LOCATION"
       }
     ]
   }
