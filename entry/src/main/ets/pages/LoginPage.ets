@@ -101,6 +101,7 @@ struct LoginPage {
           }).then(async ({code, data}) => {
             if(code == '0'){
               await PreferencesUtils.preferencesPut('userid', data.id);
+              await PreferencesUtils.preferencesFlush()
               router.clear()
               router.replaceUrl({url: 'pages/Index'})
             }else{

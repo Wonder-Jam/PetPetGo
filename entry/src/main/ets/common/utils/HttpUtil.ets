@@ -68,6 +68,7 @@ async function useHttpRequest<ResponseData, RequestData extends object | undefin
         let jwtValue = jwtCookie.split("=")[1];
         console.log('jwt', jwtValue)
         await PreferencesUtils.preferencesPut('Token', jwtValue)
+        await PreferencesUtils.preferencesFlush()
       }
       serverData.data = resultJson.data;
       serverData.code = resultJson.code;

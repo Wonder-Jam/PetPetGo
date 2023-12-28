@@ -14,53 +14,49 @@ export async function getAMediaAndRes(fullness: number, cleanliness: number, moo
   let randomFlag = false
   if (getRandomInt(3)<2){ randomFlag = true }
   let id = await PreferencesUtils.preferencesGet('userid')
+  // res为宠物随机说的话，但不一定采用
+  let url = WebConstants.TEST_ENVIRONMENT+`/chitchat?userId=${id as number}`+`&hunger=${fullness}`+`&cleanliness=${cleanliness}`+`&mood=${mood}`
+  let res = await useGet<string, undefined>(url)
 
   if (fullness <= 20 && cleanliness <= 20 && mood <= 20) { /* 三种状态值均小于等于20 */
     let answer = { url: $r('app.media.hungry_and_begging'), res: '我又饿又难过，还生病了呜呜呜...' }
     if (randomFlag) {
-      const res = await useGet<string, undefined>(WebConstants.TEST_ENVIRONMENT+`/chitchat?userId=${id as number}`)
       answer.res=res.data
     }
     return answer
   } else if (fullness <= 20 && cleanliness <= 20) { /* 仅情绪大于20 */
     let answer = { url: $r('app.media.sad_and_cry'), res: '我好饿...好像还生病了...' }
     if (randomFlag) {
-      const res = await useGet<string, undefined>(WebConstants.TEST_ENVIRONMENT+`/chitchat?userId=${id as number}`)
       answer.res=res.data
     }
     return answer
   } else if (fullness <= 20 && mood <= 20) { /* 仅清洁大于20 */
     let answer = { url: $r('app.media.sad_and_cry'), res: '我好饿...好伤心...' }
     if (randomFlag) {
-      const res = await useGet<string, undefined>(WebConstants.TEST_ENVIRONMENT+`/chitchat?userId=${id as number}`)
       answer.res=res.data
     }
     return answer
   } else if (mood <= 20 && cleanliness <= 20) { /* 仅饱食大于20 */
     let answer = { url: $r('app.media.sad_and_cry'), res: '我好难过...好像还生病了...' }
     if (randomFlag) {
-      const res = await useGet<string, undefined>(WebConstants.TEST_ENVIRONMENT+`/chitchat?userId=${id as number}`)
       answer.res=res.data
     }
     return answer
   } else if (fullness < 20) { /* 仅饱食不大于20 */
     let answer = { url: $r('app.media.eating_mud'), res: '好饿哟...已经在吃土了...' }
     if (randomFlag) {
-      const res = await useGet<string, undefined>(WebConstants.TEST_ENVIRONMENT+`/chitchat?userId=${id as number}`)
       answer.res=res.data
     }
     return answer
   } else if (cleanliness < 20) { /* 仅清洁不大于20 */
     let answer = { url: $r('app.media.hungry_and_begging'), res: '好饿哟...已经在吃土了...' }
     if (randomFlag) {
-      const res = await useGet<string, undefined>(WebConstants.TEST_ENVIRONMENT+`/chitchat?userId=${id as number}`)
       answer.res=res.data
     }
     return answer
   } else if (mood < 20) { /* 仅情绪不大于20 */
     let answer = { url: $r('app.media.angry_and_sad'), res: '主人你不要我了么！' }
     if (randomFlag) {
-      const res = await useGet<string, undefined>(WebConstants.TEST_ENVIRONMENT+`/chitchat?userId=${id as number}`)
       answer.res=res.data
     }
     return answer
@@ -69,7 +65,7 @@ export async function getAMediaAndRes(fullness: number, cleanliness: number, moo
     let answer = {url: $r('app.media.looking_stupid'), res: ''}
     answer['url'] = unhappyState[choice].url
     answer['res'] = randomFlag
-      ? (await useGet<string, undefined>(WebConstants.TEST_ENVIRONMENT+`/chitchat?userId=${id as number}`)).data
+      ? res.data
       : unhappyState[choice].res
     return answer
   } else if (fullness <= 80 || cleanliness <= 80 || mood <= 80) {
@@ -77,7 +73,7 @@ export async function getAMediaAndRes(fullness: number, cleanliness: number, moo
     let answer = {url: $r('app.media.looking_stupid'), res: ''}
     answer['url'] = normalState[choice].url
     answer['res'] = randomFlag
-      ? (await useGet<string, undefined>(WebConstants.TEST_ENVIRONMENT+`/chitchat?userId=${id as number}`)).data
+      ? res.data
       : normalState[choice].res
     return answer
   } else {
@@ -85,7 +81,7 @@ export async function getAMediaAndRes(fullness: number, cleanliness: number, moo
     let answer = {url: $r('app.media.looking_stupid'), res: ''}
     answer['url'] = happyState[choice].url
     answer['res'] = randomFlag
-      ? (await useGet<string, undefined>(WebConstants.TEST_ENVIRONMENT+`/chitchat?userId=${id as number}`)).data
+      ? res.data
       : happyState[choice].res
     return answer
   }
