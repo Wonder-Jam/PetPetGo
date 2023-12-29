@@ -27,7 +27,6 @@ export async function getWeatherInform(): Promise<string>{
   return "主人,今天天气很好哦，我们一起去玩吧~";
 }
 
-
 export async function getAMediaAndRes(fullness: number, cleanliness: number, mood: number) {
   let randomFlag = false
   if (getRandomInt(3)<2){ randomFlag = true }

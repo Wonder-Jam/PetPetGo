@@ -10,11 +10,13 @@ import { getAMediaAndRes, getRandomProperty } from '../viewmodel/PetMedia'
 export struct Pet {
   @Prop userid: string
   @State showDialog: boolean = false;
+
   @Prop dialog: string
   @StorageLink("fullness") fullness: number = 1
   @StorageLink("cleanliness") cleanliness: number = 1
   @StorageLink("mood") mood: number = 1
   @State url: Resource = $r('app.media.giving_out_love')
+
   @State particleAnimationFlag: boolean = false
   @State newPropertyAnimationFlag: boolean = false
   @State showParticle: Visibility = Visibility.Hidden
@@ -96,8 +98,7 @@ export struct Pet {
             .backgroundColor(0xEEF2FD)
             .fontSize(16)
             .margin({ left: 10, right: 10, bottom: 170 })
-            .lineHeight(0)
-
+            .lineHeight(20)
             .padding(10)
         }
       }.height('20%')

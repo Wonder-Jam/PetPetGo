@@ -49,7 +49,7 @@ struct Index {
   @State answer: string = '快来和我聊天吧(*≧▽≦)'
   @State interval: number = -1;
   scroller: Scroller = new Scroller()
-  reqPermissionsFromUser = async (permissions: Array<Permissions>):Promise<boolean> => {
+  reqPermissionsFromUser = async (permissions: Array<Permissions>): Promise<boolean> => {
     let context = getContext(this) as common.UIAbilityContext;
     let atManager = abilityAccessCtrl.createAtManager();
     // requestPermissionsFromUser会判断权限的授权状态来决定是否唤起弹窗
@@ -66,7 +66,7 @@ struct Index {
         promptAction.showToast({
           message: "主人，我需要大致的定位信息才能提醒你天气哦~"
         })
-        InformDialog("主人，我需要大致的定位信息才能提醒你天气哦~", "嗷嗷", "哒咩", "授权提醒",()=>{
+        InformDialog("主人，我需要大致的定位信息才能提醒你天气哦~", "嗷嗷", "哒咩", "授权提醒", () => {
           this.openPermissionsInSystemSettings()
         })
         return false;
@@ -75,7 +75,7 @@ struct Index {
     promptAction.showToast({
       message: "主人，我需要大致的定位信息才能提醒你天气哦~"
     })
-    InformDialog("主人，我需要大致的定位信息才能提醒你天气哦~", "嗷嗷", "哒咩", "授权提醒",()=>{
+    InformDialog("主人，我需要大致的定位信息才能提醒你天气哦~", "嗷嗷", "哒咩", "授权提醒", () => {
       this.openPermissionsInSystemSettings()
     })
     return false;
@@ -101,14 +101,14 @@ struct Index {
   async onPageShow() {
     console.log('onPageShow~')
     BackgroundUtils.stopContinuousTask(this.context)
-    if(this.interval!=-1) {
+    if (this.interval != -1) {
       clearInterval(this.interval)
     }
     console.log('map: ' + this.propertyAmount)
     // this.reqPermissionsFromUser()
-    if(await (this.reqPermissionsFromUser(['ohos.permission.APPROXIMATELY_LOCATION']))){
-      getWeatherInform().then((value)=>{
-        this.dialog=String(value)
+    if (await (this.reqPermissionsFromUser(['ohos.permission.APPROXIMATELY_LOCATION']))) {
+      getWeatherInform().then((value) => {
+        this.dialog = String(value)
       })
     }
     PreferencesUtils.preferencesGet('userid', -1).then((id) => {
@@ -122,7 +122,7 @@ struct Index {
 
   onPageHide() {
     BackgroundUtils.startContinuousTask(this.context)
-    this.interval=setInterval(() => {
+    this.interval = setInterval(() => {
       if (Number(this.mood) >= 10) {
         this.mood = String(Number(this.mood) - 10);
       }
@@ -440,12 +440,20 @@ struct Index {
                 let tmpFullness = Number(this.fullness) + item.effect[0]
                 let tmpCleanliness = Number(this.cleanliness) + item.effect[1]
                 let tmpMood = Number(this.mood) + item.effect[2]
-                this.fullness = tmpFullness<=100 ? String(tmpFullness):"100"
-                this.cleanliness = tmpCleanliness<=100 ? String(tmpCleanliness):"100"
-                this.mood = tmpMood<=100 ? String(tmpMood):"100"
-                putPropertyUpdate(this.curType, item, this.userid, -1);
-                // TODO: 如果要把forEach里面的数据-1，需要涉及到observed和objectlink，这部分还没有看懂
-                this.show = false;
+                this.fullness = tmpFullness <= 100 ? String(tmpFullness) : "100"
+                this.cleanliness = tmpCleanliness <= 100 ? String(tmpCleanliness) : "100"
+                this.mood = tmpMood <= 100 ? String(tmpMood) : "100"
+                if (this.propertyAmount.find(obj => obj.name === item.text) && this.propertyAmount.find(obj => obj.name === item.text)
+                  .amount > 0) {
+                  putPropertyUpdate(this.curType, item, this.userid, -1);
+                  // TODO: 如果要把forEach里面的数据-1，需要涉及到observed和objectlink，这部分还没有看懂
+                  this.show = false;
+                } else {
+                  promptAction.showToast({
+                    message: "道具花光咯~"
+                  })
+                }
+
                 // (this.propertyAmount.find(obj => obj.name === item.text)).amount--
                 // console.log('index'+(this.propertyAmount.find(obj => obj.name === item.text)).amount)
                 // this.propertyAmount = this.propertyAmount
