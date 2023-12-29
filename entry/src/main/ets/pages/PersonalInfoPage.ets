@@ -74,19 +74,19 @@ struct PersonalInfoPage{
         Stack(){
           Row().width("100%").height("100%")
             .linearGradient({
-            // colors: [[0x6fc7ec, 0.0], [0x7dcbec, 0.1], [0x8bd0ed, 0.2],[0x9ad4ed, 0.3],[0xa8d9ed, 0.4],[0xb6ddee, 0.5],[0xc4e2ee, 0.6],[0xd3e6ee, 0.7],[0xe1ebef, 0.8],[0xefefef, 0.9],[0xefefef, 1.0]]
-            colors: [
-              [0xffbb33, 0.0],
-              [0xfdc046, 0.1],
-              [0xfcc559, 0.2],
-              [0xfacb6b, 0.3],
-              [0xf9d07e, 0.4],
-              [0xf7d591, 0.5],
-              [0xf5daa4, 0.6],
-              [0xf4dfb7, 0.7],
-              [0xf2e5c9, 0.8],
-              [0xf1eadc, 0.9],
-              [0xefefef, 1.0]]
+            colors: [[0x6fc7ec, 0.0], [0x7dcbec, 0.1], [0x8bd0ed, 0.2],[0x9ad4ed, 0.3],[0xa8d9ed, 0.4],[0xb6ddee, 0.5],[0xc4e2ee, 0.6],[0xd3e6ee, 0.7],[0xe1ebef, 0.8],[0xefefef, 0.9],[0xefefef, 1.0]]
+            // colors: [
+            //   [0xffbb33, 0.0],
+            //   [0xfdc046, 0.1],
+            //   [0xfcc559, 0.2],
+            //   [0xfacb6b, 0.3],
+            //   [0xf9d07e, 0.4],
+            //   [0xf7d591, 0.5],
+            //   [0xf5daa4, 0.6],
+            //   [0xf4dfb7, 0.7],
+            //   [0xf2e5c9, 0.8],
+            //   [0xf1eadc, 0.9],
+            //   [0xefefef, 1.0]]
           })
           Image($r('app.media.default_profile'))
             .width("30%")
