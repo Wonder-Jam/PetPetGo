@@ -104,6 +104,49 @@ export async function getAMediaAndRes(fullness: number, cleanliness: number, moo
   }
 }
 
+export function getMediaAndRes_card(fullness: number, cleanliness: number, mood: number) {
+  if (fullness <= 20 && cleanliness <= 20 && mood <= 20) { /* 三种状态值均小于等于20 */
+    let answer = { url: $r('app.media.hungry_and_begging'), res: '我又饿又难过，还生病了呜呜呜...' }
+    return answer
+  } else if (fullness <= 20 && cleanliness <= 20) { /* 仅情绪大于20 */
+    let answer = { url: $r('app.media.sad_and_cry'), res: '我好饿...好像还生病了...' }
+    return answer
+  } else if (fullness <= 20 && mood <= 20) { /* 仅清洁大于20 */
+    let answer = { url: $r('app.media.sad_and_cry'), res: '我好饿...好伤心...' }
+    return answer
+  } else if (mood <= 20 && cleanliness <= 20) { /* 仅饱食大于20 */
+    let answer = { url: $r('app.media.sad_and_cry'), res: '我好难过...好像还生病了...' }
+    return answer
+  } else if (fullness < 20) { /* 仅饱食不大于20 */
+    let answer = { url: $r('app.media.eating_mud'), res: '好饿哟...已经在吃土了...' }
+    return answer
+  } else if (cleanliness < 20) { /* 仅清洁不大于20 */
+    let answer = { url: $r('app.media.hungry_and_begging'), res: '好饿哟...已经在吃土了...' }
+    return answer
+  } else if (mood < 20) { /* 仅情绪不大于20 */
+    let answer = { url: $r('app.media.angry_and_sad'), res: '主人你不要我了么！' }
+    return answer
+  } else if (fullness <= 60 || cleanliness <= 60 || mood <= 60) {
+    let choice = Math.floor(Math.random() * unhappyState.length);
+    let answer = {url: $r('app.media.looking_stupid'), res: ''}
+    answer['url'] = unhappyState[choice].url
+    answer['res'] = unhappyState[choice].res
+    return answer
+  } else if (fullness <= 80 || cleanliness <= 80 || mood <= 80) {
+    let choice = Math.floor(Math.random() * normalState.length);
+    let answer = {url: $r('app.media.looking_stupid'), res: ''}
+    answer['url'] = normalState[choice].url
+    answer['res'] = normalState[choice].res
+    return answer
+  } else {
+    let choice = Math.floor(Math.random() * happyState.length);
+    let answer = {url: $r('app.media.looking_stupid'), res: ''}
+    answer['url'] = happyState[choice].url
+    answer['res'] = happyState[choice].res
+    return answer
+  }
+}
+
 const unhappyState = [{ url: $r('app.media.looking_stupid'), res: '我是谁？我在哪？我都有点神志不清了捏' }, {
   url: $r('app.media.want_food'),
   res: '妈妈，饿饿，饭饭'

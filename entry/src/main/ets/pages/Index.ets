@@ -437,16 +437,16 @@ struct Index {
                     .height(12)
                 }
               }.height(100).onClick(() => {
-                let tmpFullness = Number(this.fullness) + item.effect[0]
-                let tmpCleanliness = Number(this.cleanliness) + item.effect[1]
-                let tmpMood = Number(this.mood) + item.effect[2]
-                this.fullness = tmpFullness <= 100 ? String(tmpFullness) : "100"
-                this.cleanliness = tmpCleanliness <= 100 ? String(tmpCleanliness) : "100"
-                this.mood = tmpMood <= 100 ? String(tmpMood) : "100"
                 if (this.propertyAmount.find(obj => obj.name === item.text) && this.propertyAmount.find(obj => obj.name === item.text)
                   .amount > 0) {
                   putPropertyUpdate(this.curType, item, this.userid, -1);
                   // TODO: 如果要把forEach里面的数据-1，需要涉及到observed和objectlink，这部分还没有看懂
+                  let tmpFullness = Number(this.fullness) + item.effect[0]
+                  let tmpCleanliness = Number(this.cleanliness) + item.effect[1]
+                  let tmpMood = Number(this.mood) + item.effect[2]
+                  this.fullness = tmpFullness <= 100 ? String(tmpFullness) : "100"
+                  this.cleanliness = tmpCleanliness <= 100 ? String(tmpCleanliness) : "100"
+                  this.mood = tmpMood <= 100 ? String(tmpMood) : "100"
                   this.show = false;
                 } else {
                   promptAction.showToast({
