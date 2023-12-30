@@ -25,6 +25,7 @@ export default class EntryFormAbility extends FormExtensionAbility {
       FormUtils.insertFormData(this.context, formInfo);
 
       let formData = formBindingData.createFormBindingData('');
+
       return formData;
     }
   }
@@ -35,6 +36,10 @@ export default class EntryFormAbility extends FormExtensionAbility {
   }
 
   onUpdateForm(formId) {
+    PersistentStorage.PersistProp<string>('fullness', '85');
+    PersistentStorage.PersistProp<string>('cleanliness', '85');
+    PersistentStorage.PersistProp<string>('mood', '85');
+    console.log("updateCards")
     FormUtils.updateCards(this.context);
   }
 

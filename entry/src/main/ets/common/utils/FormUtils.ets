@@ -17,17 +17,12 @@ import formBindingData from '@ohos.app.form.formBindingData';
 import formProvider from '@ohos.app.form.formProvider';
 import RdbUtils from '../database/rdb/RdbUtils';
 import FormInfoApi from '../dataBase/tables/FormInfoApi';
-// import DayInfoApi from '../dataBase/tables/DayInfoApi';
-// import TaskInfoApi from '../dataBase/tables/TaskInfoApi';
-// import AgencyCardInfo from '../../viewmodel/AgencyCardInfo';
 import FormInfo from '../../viewmodel/FormInfo';
 import Logger from '../utils/Logger';
-// import ProgressCardInfo from '../../viewmodel/ProgressCardInfo';
-// import TaskInfo, { taskType } from '../../viewmodel/TaskInfo';
 import { columnDayInfoList, columnTaskInfoInfoList, columnFormInfoList } from '../../viewmodel/RdbColumnModel';
 import { CommonConstants as Const } from '../constants/CommonConstants';
-// import DayInfo from '../../viewmodel/DayInfo';
 import { GlobalContext } from './GlobalContext';
+import PreferencesUtils from './PreferencesUtils'
 
 class FormUtils {
   /**
@@ -36,9 +31,6 @@ class FormUtils {
    * @param {Context} context Indicates the context of application or capability.
    * @param {FormInfo} formInfo Insert the form information to be saved.
    */
-  // @StorageLink('fullness') fullness: string = '0';
-  // @StorageLink('cleanliness') cleanliness: string = '20';
-  // @StorageLink('mood') mood: string = '40';
   public insertFormData(context: Context, formInfo: FormInfo): void {
     RdbUtils.initDb(context, Const.RDB_NAME.dbName ? Const.RDB_NAME.dbName : '');
     let isCreatePromise = RdbUtils.isCreateTable(Const.FORM_INFO.tableName ?
@@ -103,14 +95,13 @@ class FormUtils {
     console.log('fromAction: queryFormData undergoing');
     FormInfoApi.queryFormData((resultSet: Array<FormInfo>) => {
       resultSet.forEach((item: FormInfo) => {
-        // this.updateRectangleCards(item);
         let obj = {
-          fullness: AppStorage.Get('fullness'),
-          cleanliness: AppStorage.Get('cleanliness'),
-          mood: AppStorage.Get('mood')
-          // fullness: this.fullness,
-          // cleanliness: this.cleanliness,
-          // mood: this.mood
+          fullness: AppStorage.Get('fullness')??'85',
+          cleanliness: AppStorage.Get('cleanliness')??'85',
+          mood: AppStorage.Get('mood')??'85',
+          // fullness : await PreferencesUtils.preferencesGet('fullness', -1),
+          // cleanliness : await PreferencesUtils.preferencesGet('cleanliness', -1),
+          // mood : await PreferencesUtils.preferencesGet('mood', -1)
         };
         let formData = formBindingData.createFormBindingData(obj);
         console.log('fromAction: got '+ obj.fullness + obj.cleanliness + obj.mood)

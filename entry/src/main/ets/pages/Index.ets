@@ -22,11 +22,9 @@ class resObject {
   type: string;
 }
 
-
 PersistentStorage.PersistProp<string>('fullness', '85');
 PersistentStorage.PersistProp<string>('cleanliness', '85');
 PersistentStorage.PersistProp<string>('mood', '85');
-
 
 @Entry
 @Component
@@ -114,7 +112,6 @@ struct Index {
     }).catch((err) => {
       console.log('preference error' + err)
     });
-
   }
 
   onPageHide() {
