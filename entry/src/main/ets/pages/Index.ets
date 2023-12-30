@@ -94,18 +94,15 @@ struct Index {
         message: "在应用权限中允许我获取您的地理位置哦~"
       })
     }).catch((err) => {
-      // ...
+      console.log(err)
     })
   }
 
   async onPageShow() {
-    console.log('onPageShow~')
     BackgroundUtils.stopContinuousTask(this.context)
     if (this.interval != -1) {
       clearInterval(this.interval)
     }
-    console.log('map: ' + this.propertyAmount)
-    // this.reqPermissionsFromUser()
     if (await (this.reqPermissionsFromUser(['ohos.permission.APPROXIMATELY_LOCATION']))) {
       getWeatherInform().then((value) => {
         this.dialog = String(value)
@@ -138,11 +135,7 @@ struct Index {
   }
 
   private updateForm() {
-    // let formData = { fullness: this.fullness, cleanliness: this.cleanliness, mood: this.mood };
-    // formProvider.updateForm(this.formId, formBindingData.createFormBindingData(formData))
-    console.log('fromAction: updateForm undergoing');
     FormUtils.updateCards(getContext())
-    console.log('fromAction: updateForm complete');
   }
 
   private async pullPanel(type: string) {
@@ -231,8 +224,6 @@ struct Index {
               })
             })
         }.height('7%').width('100%')
-        // .width('95%')
-        // TODO：三个状态条
         Column() {
           Row() {
             Image($r('app.media.food_state')).width(40).height(40).borderRadius(8).margin({ right: 10 })
@@ -269,10 +260,8 @@ struct Index {
             Text("" + this.mood).margin({ left: 5 })
           }.height('6%').width('95%')
         }.width('95%')
-        // TODO：pet主体，目前采用的是image，但是实现需求里的交互应该要换组件
         Pet({ userid: this.userid, dialog: this.dialog })
 
-        // TODO：底下的三个button
         if (!this.isHidden) {
           Flex({ alignItems: ItemAlign.Start, justifyContent: FlexAlign.SpaceBetween }) {
             Column() {
@@ -281,7 +270,6 @@ struct Index {
                 .width(80)
                 .onClick(() => {
                   if (Number(this.fullness) < 100) {
-                    // this.fullness = String(Number(this.fullness) + 10);
                     this.updateForm();
                   }
                   this.pullPanel('food')
@@ -295,7 +283,6 @@ struct Index {
                 .width(80)
                 .onClick(() => {
                   if (Number(this.mood) < 100) {
-                    // this.mood = String(Number(this.mood) + 10);
                     this.updateForm()
                   }
                   ;
@@ -310,7 +297,6 @@ struct Index {
                 .width(80)
                 .onClick(() => {
                   if (Number(this.cleanliness) < 100) {
-                    // this.cleanliness = String(Number(this.cleanliness) + 10);
                     this.updateForm();
                   }
                   this.pullPanel('medicine')
@@ -338,7 +324,6 @@ struct Index {
           .transition({ type: TransitionType.Insert, opacity: 0, translate: { x: 200, y: 0 } })
           .transition({ type: TransitionType.Delete, opacity: 0, translate: { x: 200, y: 0 } })
         }
-        //TODO: 底部的输入框，按照设想，当用户点击发送后，会展示聊天页面从底部弹出的动画，更加丝滑
         Row() {
           TextArea({ text: this.text, placeholder: '快来聊天吧！', controller: this.controller })
             .placeholderColor(Color.Grey)
@@ -440,7 +425,6 @@ struct Index {
                 if (this.propertyAmount.find(obj => obj.name === item.text) && this.propertyAmount.find(obj => obj.name === item.text)
                   .amount > 0) {
                   putPropertyUpdate(this.curType, item, this.userid, -1);
-                  // TODO: 如果要把forEach里面的数据-1，需要涉及到observed和objectlink，这部分还没有看懂
                   let tmpFullness = Number(this.fullness) + item.effect[0]
                   let tmpCleanliness = Number(this.cleanliness) + item.effect[1]
                   let tmpMood = Number(this.mood) + item.effect[2]
@@ -453,10 +437,6 @@ struct Index {
                     message: "道具花光咯~"
                   })
                 }
-
-                // (this.propertyAmount.find(obj => obj.name === item.text)).amount--
-                // console.log('index'+(this.propertyAmount.find(obj => obj.name === item.text)).amount)
-                // this.propertyAmount = this.propertyAmount
               })
             }, (item) => {
               return item.id
@@ -466,7 +446,6 @@ struct Index {
           .columnsGap(10)
           .rowsGap(10)
           .width('90%')
-          // .backgroundColor(0xFAEEE0)
           .height('90%')
         }
       }

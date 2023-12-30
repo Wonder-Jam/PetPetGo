@@ -7,10 +7,6 @@ import {CommonConstants} from '../common/constants/CommonConstants'
 import formProvider from '@ohos.app.form.formProvider';
 import { getMediaAndRes_card } from '../viewmodel/PetMedia';
 
-// PersistentStorage.PersistProp<string>('fullness', '60');
-// PersistentStorage.PersistProp<string>('cleanliness','60');
-// PersistentStorage.PersistProp<string>('mood','60');
-// PersistentStorage.PersistProp<string>('formId', '');
 
 
 export default class EntryFormAbility extends FormExtensionAbility {
@@ -25,15 +21,10 @@ export default class EntryFormAbility extends FormExtensionAbility {
         formName: formName,
         formDimension: formDimension
       };
-      // AppStorage.SetOrCreate('fullness', '60');
-      // AppStorage.SetOrCreate('cleanliness', '60');
-      // AppStorage.SetOrCreate('mood', '60');
       console.log('fromAction: system updating the card')
       FormUtils.insertFormData(this.context, formInfo);
 
-      // let formData = formBindingData.createFormBindingData({fullness: AppStorage.Get('fullness'), cleanliness: AppStorage.Get('cleanliness'), mood: AppStorage.Get('mood')});
       let formData = formBindingData.createFormBindingData('');
-      // FormUtils.updateCards(this.context);
       return formData;
     }
   }

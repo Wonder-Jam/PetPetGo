@@ -47,7 +47,6 @@ struct PersonalInfoPage{
 
   async onPageShow(){
       let id = await PreferencesUtils.preferencesGet('userid')
-    console.info("personalinfo", id)
       useGet<InfoData, undefined>(WebConstants.TEST_ENVIRONMENT + '/user/'+id.toString()+'/info')
         .then(({data}) => {
           this.username = data.username;

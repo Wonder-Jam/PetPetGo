@@ -38,7 +38,4 @@ export async function getCurrentWeather(): Promise<weatherRes> {
   } finally {
     return weatherData
   }
-  // catch (err) {
-  //   console.error("weatherData:" + err.code + ",errMessage:" + err.message);
-  // }
 }

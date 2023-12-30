@@ -16,12 +16,8 @@ export default class EntryAbility extends UIAbility {
       .catch((err: Error) => {
         Logger.error(`RdbHelper formInfo err : ${JSON.stringify(err)}`);
       });
-    // AppStorage.SetOrCreate('fullness', '60');
-    // AppStorage.SetOrCreate('cleanliness', '60');
-    // AppStorage.SetOrCreate('mood', '60');
 
     await PreferencesUtils.initPreferences(this.context)
-    // await PreferencesUtils.preferencesPut('fruit', 'apple')
 
   }
 
@@ -30,31 +26,9 @@ export default class EntryAbility extends UIAbility {
   }
 
   async onWindowStageCreate(windowStage: window.WindowStage) {
-    // Main window is created, set main page for this ability
     hilog.info(0x0000, 'testTag', '%{public}s', 'Ability onWindowStageCreate');
 
-// <<<<<<< HEAD
-//     let isNotFirst: boolean = false;
-//     if (isNotFirst){
-//       windowStage.loadContent('pages/LoginPage', (err, data) => {
-//         if (err.code) {
-//           hilog.error(0x0000, 'testTag', 'Failed to load the content. Cause: %{public}s', JSON.stringify(err) ?? '');
-//           return;
-//         }
-//         hilog.info(0x0000, 'testTag', 'Succeeded in loading the content. Data: %{public}s', JSON.stringify(data) ?? '');
-//       });
-//     }else{
-//       windowStage.loadContent('pages/Index', (err, data) => {
-//         if (err.code) {
-//           hilog.error(0x0000, 'testTag', 'Failed to load the content. Cause: %{public}s', JSON.stringify(err) ?? '');
-//           return;
-//         }
-//         hilog.info(0x0000, 'testTag', 'Succeeded in loading the content. Data: %{public}s', JSON.stringify(data) ?? '');
-//       });
-//     }
-// =======
     let isLoggedIn: boolean = false;
-    // let isLoggedIn: boolean = await PreferencesUtils.preferencesHas('Token')
     let firstUrl: string = isLoggedIn ? 'pages/LoginPage' : 'pages/Index'
     windowStage.loadContent(firstUrl, (err, data) => {
       if (err.code) {
@@ -63,21 +37,17 @@ export default class EntryAbility extends UIAbility {
       }
       hilog.info(0x0000, 'testTag', 'Succeeded in loading the content. Data: %{public}s', JSON.stringify(data) ?? '');
     });
-// >>>>>>> 02e3245c3432c4f2dd1c1f4a68becbc32876f85e
   }
 
   onWindowStageDestroy() {
-    // Main window is destroyed, release UI related resources
     hilog.info(0x0000, 'testTag', '%{public}s', 'Ability onWindowStageDestroy');
   }
 
   onForeground() {
-    // Ability has brought to foreground
     hilog.info(0x0000, 'testTag', '%{public}s', 'Ability onForeground');
   }
 
   onBackground() {
-    // Ability has back to background
     hilog.info(0x0000, 'testTag', '%{public}s', 'Ability onBackground');
   }
 }

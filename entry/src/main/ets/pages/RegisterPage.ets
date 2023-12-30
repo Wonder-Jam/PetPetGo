@@ -112,7 +112,6 @@ struct RegisterPage {
         }.type(ButtonType.Capsule).margin({ top: 50 }).backgroundColor('#ffd175').width('60%').height('5%')
         .onClick(async ()=>{
           let re = new RegExp("\\d{4}")
-          // if (this.username.length < 0){Alert('账号过短，请输入至少4位');return}
           if (!re.test(this.username)){Alert('请自定义四位数字的账号');return}
           if (this.phone.length === 0){Alert('手机号码不能为空');return}
           if (this.password.length === 0){Alert('密码不能为空');return}

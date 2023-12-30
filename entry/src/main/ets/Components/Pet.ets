@@ -1,10 +1,6 @@
 import { getAMediaAndRes, getRandomProperty } from '../viewmodel/PetMedia'
 
 
-// PersistentStorage.PersistProp("fullness", 0);
-// PersistentStorage.PersistProp("cleanliness",0);
-// PersistentStorage.PersistProp("mood",0);
-
 
 @Component
 export struct Pet {
@@ -35,15 +31,7 @@ export struct Pet {
   @State clickable: boolean = true
 
   aboutToAppear() {
-    // let stateMediaAndRes = getAMediaAndRes(this.fullness, this.cleanliness, this.mood)
-    // stateMediaAndRes.then((value) => {
-    //   this.url = value.url;
-    //   this.dialog = value.res
-    // })
     this.showDialog = true;
-    // setTimeout(() => {
-    //   this.showDialog = false;
-    // }, 3000)
   }
 
   build() {
@@ -51,9 +39,7 @@ export struct Pet {
       Image(this.url)
         .width(250)
         .height(250)
-          // .margin(15)
         .borderRadius(30)
-          // .border({width:1, color:Color.Gray})
         .objectFit(ImageFit.Contain)
         .onClick(async () => {
           this.particleAnimationFlag = true;
@@ -61,10 +47,6 @@ export struct Pet {
           if (this.clickable) {
             this.clickable = false
             let stateMediaAndRes = await getAMediaAndRes(this.fullness, this.cleanliness, this.mood)
-            // stateMediaAndRes.then((value) => {
-            //   this.url = value.url;
-            //   this.dialog = value.res
-            // })
             this.url = stateMediaAndRes.url;
             this.dialog = stateMediaAndRes.res;
             this.showDialog = true;
@@ -85,7 +67,6 @@ export struct Pet {
             }
             console.log("mediaSource" + this.url)
             setTimeout(() => {
-              // this.showDialog = false;
               this.clickable = true;
             }, 3000)
           }
@@ -108,10 +89,7 @@ export struct Pet {
           Circle({ width: 10, height: 10 })
             .fill(this.particleColor[Math.floor(Math.random() * this.particleColor.length)])
             .visibility(this.showParticle)
-            .translate(this.particleAnimationFlag ? { x: Math.random() * 300 - 150, y: Math.random() * 300 - 150 } : {
-                                                                                                                       x: 0,
-                                                                                                                       y: 0
-                                                                                                                     })
+            .translate(this.particleAnimationFlag ? { x: Math.random() * 300 - 150, y: Math.random() * 300 - 150 } : { x: 0, y: 0 })
             .opacity(this.particleAnimationFlag ? 0 : 1)
             .animation({
               delay: 5,

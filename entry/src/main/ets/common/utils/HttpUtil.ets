@@ -42,7 +42,6 @@ async function useHttpRequest<ResponseData, RequestData extends object | undefin
     extraData: params
   }).catch((error: Error) => {
     // 请求本身也可能不合法（比如url不合法），需要catch
-    console.log('httputil error received!' + error.message)
     console.error(error.name, error.message, error.stack)
     return serverData;
   });
@@ -51,11 +50,7 @@ async function useHttpRequest<ResponseData, RequestData extends object | undefin
     console.log('httputil request received!')
     let isTokenInvalid: boolean = true;
     isTokenInvalid = value.responseCode === http.ResponseCode.UNAUTHORIZED
-    // console.log('httputil tokeninvalid', isTokenInvalid)
-    // console.log('httputil code', value.responseCode)
-    // console.log('httputil value',JSON.stringify(value.result))
     if (value.responseCode === http.ResponseCode.OK) {
-      // console.log('httputil token ok')
       let result = `${value.result}`;
       let resultJson: Response<ResponseData> = JSON.parse(result);
       console.log('header', JSON.stringify(value.header))
@@ -78,7 +73,7 @@ async function useHttpRequest<ResponseData, RequestData extends object | undefin
       router.pushUrl({
         url: 'pages/LoginPage'
       })
-      return serverData; // todo 中断请求的逻辑可能有问题
+      return serverData;
     } else {
       throw new Error(value.responseCode.toString());
     }

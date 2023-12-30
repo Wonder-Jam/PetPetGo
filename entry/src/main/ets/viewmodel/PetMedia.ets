@@ -12,9 +12,7 @@ function getRandomInt(max) {
 
 export async function getWeatherInform(): Promise<string>{
   let id = await PreferencesUtils.preferencesGet('userid')
-  console.log('halo?????')
   const weatherData = await getCurrentWeather()
-  console.log(JSON.stringify(weatherData))
   if(weatherData){
     console.log("dialog proceeding")
     let url = WebConstants.TEST_ENVIRONMENT+`/chitchat?userId=${id as number}`+`&weather=${"weather:"+weatherData.weather[0].description+","+"temperature:"+weatherData.main.feels_like+","+"humidity:"+weatherData.main.humidity}`
@@ -23,7 +21,6 @@ export async function getWeatherInform(): Promise<string>{
     console.log(String(res.data))
     return res.data;
   }
-  console.log('halo???')
   return "主人,今天天气很好哦，我们一起去玩吧~";
 }
 
