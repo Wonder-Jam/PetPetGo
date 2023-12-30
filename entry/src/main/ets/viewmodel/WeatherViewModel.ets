@@ -18,9 +18,7 @@ interface weatherRes {
 }
 
 export async function getCurrentWeather(): Promise<weatherRes> {
-  console.log("weatherData undergoing")
   let requestInfo = {'priority': 0x203, 'scenario': 0x300,'maxAccuracy': 0};
-  console.log("weatherData halo?")
   let weatherData:weatherRes=null;
 
   try {
